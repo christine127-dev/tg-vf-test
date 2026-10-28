@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0;font:14px system-ui,sans-serif} img{max-width:100%} [hidden]{display:none!important}</style>
+<script src="config.js"></script>
+<title>V-Flow 挑戰賽</title>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@200;300;400;500;700&family=DM+Mono:wght@300;400&display=swap">
+<style>
+/* Layout: the clinic video sits fixed behind everything; content floats on frosted-glass panels in one 760px column. Thin Noto Sans HK, hairlines, gold light. */
+:root{
+  --bg:#eeebe6; --surface:rgba(255,255,255,.58); --surface-2:rgba(255,255,255,.42); --fg:#1a1816; --muted:#6e6760; --line:rgba(26,24,22,.10); --line-strong:rgba(26,24,22,.18);
+  --accent:#b08a3e; --accent-2:#dcc08a; --accent-soft:rgba(176,138,62,.12); --glass-hi:rgba(255,255,255,.75);
+  --ok:#1f7a4b; --ok-soft:rgba(31,122,75,.12); --bad:#b3261e; --bad-soft:rgba(179,38,30,.10);
+  --veil:linear-gradient(180deg,rgba(238,235,230,.10) 0%,rgba(238,235,230,.55) 60%,rgba(238,235,230,.80) 100%);
+  --hero-fg:#1a1816; --hero-muted:#4f4841;
+  --body:"Noto Sans HK",system-ui,sans-serif; --mono:"DM Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f0e0c; --surface:rgba(22,20,17,.58); --surface-2:rgba(22,20,17,.42); --fg:#f1ece4; --muted:#a39a8e; --line:rgba(241,236,228,.10); --line-strong:rgba(241,236,228,.20);
+  --accent:#dcc08a; --accent-2:#f0dcae; --accent-soft:rgba(220,192,138,.14); --glass-hi:rgba(255,255,255,.08);
+  --ok:#5fd693; --ok-soft:rgba(95,214,147,.14); --bad:#ff7f76; --bad-soft:rgba(255,127,118,.14);
+  --veil:linear-gradient(180deg,rgba(15,14,12,.30) 0%,rgba(15,14,12,.70) 60%,rgba(15,14,12,.88) 100%);
+  --hero-fg:#f1ece4; --hero-muted:#cfc5b8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f0e0c; --surface:rgba(22,20,17,.58); --surface-2:rgba(22,20,17,.42); --fg:#f1ece4; --muted:#a39a8e; --line:rgba(241,236,228,.10); --line-strong:rgba(241,236,228,.20);
+  --accent:#dcc08a; --accent-2:#f0dcae; --accent-soft:rgba(220,192,138,.14); --glass-hi:rgba(255,255,255,.08);
+  --ok:#5fd693; --ok-soft:rgba(95,214,147,.14); --bad:#ff7f76; --bad-soft:rgba(255,127,118,.14);
+  --veil:linear-gradient(180deg,rgba(15,14,12,.30) 0%,rgba(15,14,12,.70) 60%,rgba(15,14,12,.88) 100%);
+  --hero-fg:#f1ece4; --hero-muted:#cfc5b8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:300;line-height:1.6;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px;position:relative;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:500}
+.hero-media{position:fixed;inset:0;z-index:-1;background:var(--bg);overflow:hidden}
+.hero-media video,.hero-media img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.9)}
+.hero-media::after{content:"";position:absolute;inset:0;background:var(--veil)}
+.wrap{max-width:760px;margin:0 auto;display:grid;gap:18px}
+header{color:#fff;padding:120px 6px 26px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;text-shadow:0 1px 2px rgba(0,0,0,.35),0 6px 24px rgba(0,0,0,.35)}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-2);margin:0 0 12px;font-weight:400}
+h1{font-weight:700;font-size:clamp(40px,8vw,64px);margin:0;letter-spacing:.01em;line-height:1;text-wrap:balance;color:#fff}
+h1 span{color:var(--accent-2);font-weight:300;font-size:.4em;vertical-align:super;margin-left:4px;letter-spacing:0}
+.sub{color:rgba(255,255,255,.92);margin:12px 0 0;font-size:14px;max-width:46ch;font-weight:400}
+.who{font-size:12px;color:rgba(255,255,255,.85);text-align:right;padding-bottom:6px;font-family:var(--mono);letter-spacing:.06em}
+.card{background:var(--surface);border:1px solid var(--line-strong);border-radius:22px;padding:28px;backdrop-filter:blur(22px) saturate(1.2);-webkit-backdrop-filter:blur(22px) saturate(1.2);box-shadow:inset 0 1px 0 var(--glass-hi),0 24px 60px -36px rgba(0,0,0,.35)}
+.card.hero{}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+h2{font-size:22px;margin:6px 0 14px;font-weight:300;letter-spacing:.01em}
+/* setup */
+.setup{padding:0;overflow:hidden}
+.setup-grid{display:grid;grid-template-columns:minmax(0,1fr) 236px}
+.setup-main{padding:30px 28px 26px;display:grid;gap:28px;min-width:0}
+.setup-side{background:var(--surface-2);padding:30px 24px;display:flex;flex-direction:column;gap:6px;border-left:1px solid var(--line)}
+.row{display:grid;grid-template-columns:72px minmax(0,1fr);gap:14px;align-items:start}
+.row-l{display:flex;flex-direction:column;gap:2px;padding-top:8px}
+.step-n{font-family:var(--mono);font-size:10.5px;color:var(--accent);letter-spacing:.2em;min-height:14px}
+.row-t{font-weight:400;font-size:14px;letter-spacing:.04em} .row-t.muted{color:var(--muted);font-weight:300}
+.segc{display:grid;gap:8px}
+.segc.two{grid-template-columns:repeat(2,minmax(0,1fr))} .segc.three{grid-template-columns:repeat(3,minmax(0,1fr))} .segc.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.opt-s{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;border:1px solid var(--line-strong);border-radius:14px;padding:12px 13px;background:transparent;color:var(--fg);font:inherit;font-weight:300;text-align:left;cursor:pointer;transition:background .18s,border-color .18s,box-shadow .18s}
+.opt-s b{font-size:15px;line-height:1.25;white-space:nowrap;font-weight:400}
+.opt-s small{font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.opt-s:hover,.opt-s:focus-visible{border-color:var(--accent);outline:none}
+.opt-s[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset,0 0 24px -8px var(--accent)}
+.opt-s[aria-pressed="true"] b{color:var(--fg)}
+.mode.opt-s b{font-family:var(--mono);font-weight:400;font-size:20px}
+.hint{margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+.cats{display:flex;flex-wrap:wrap;gap:6px;padding-top:12px}
+.adv{border-top:1px solid var(--line);padding-top:14px;margin-top:-6px}
+.adv summary{list-style:none;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--muted);user-select:none}
+.adv summary::-webkit-details-marker{display:none}
+.adv summary::before{content:"+";font-family:var(--mono);color:var(--accent);width:20px;height:20px;border:1px solid var(--line-strong);border-radius:50%;display:grid;place-items:center;font-size:13px}
+.adv[open] summary::before{content:"−"}
+.adv summary em{font-style:normal;margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--fg)}
+.chip{border:1px solid var(--line-strong);border-radius:999px;padding:5px 12px;font-size:12px;background:transparent;color:var(--fg);font:inherit;font-weight:300;cursor:pointer;transition:background .15s,border-color .15s}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--fg)}
+.sum-track{font-size:24px;line-height:1.2;margin-top:2px;font-weight:300;letter-spacing:.01em}
+.sum-level{font-size:13px;color:var(--muted)}
+.sum-dl{margin:16px 0 12px;padding:12px 0;border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line-strong);display:grid;gap:8px}
+.sum-dl div{display:flex;justify-content:space-between;align-items:baseline}
+.sum-dl dt{font-size:12.5px;color:var(--muted)} .sum-dl dd{margin:0;font-family:var(--mono);font-size:18px;color:var(--fg);font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--accent);border-radius:999px;padding:12px 24px;font:inherit;font-weight:400;font-size:14px;letter-spacing:.08em;cursor:pointer;background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#1a1816;box-shadow:0 10px 30px -14px var(--accent);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 14px 34px -14px var(--accent)}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line-strong);box-shadow:none}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.btn.start{width:100%;padding:14px;font-size:15px;margin-top:4px}
+/* quiz */
+.progress{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.bar{flex:1;height:3px;background:var(--line-strong);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));width:0;transition:width .3s}
+.count{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.08em}
+.badge{display:inline-block;margin-left:10px;padding:2px 10px;border-radius:999px;font-size:10.5px;font-family:var(--mono);letter-spacing:.1em;border:1px solid var(--accent);color:var(--accent);vertical-align:middle}
+.prompt{font-size:clamp(20px,3.4vw,26px);font-weight:300;line-height:1.45;margin:8px 0 20px;text-wrap:balance;letter-spacing:.01em}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;border:1px solid var(--line-strong);border-radius:16px;padding:16px 18px;background:var(--surface-2);color:var(--fg);font:inherit;font-weight:300;font-size:16px;cursor:pointer;display:flex;gap:14px;align-items:flex-start;line-height:1.5;transition:border-color .15s,background .15s,transform .12s}
+.opt .k{font-family:var(--mono);color:var(--muted);flex:none;width:26px;height:26px;border:1px solid var(--line-strong);border-radius:50%;display:grid;place-items:center;font-size:12px;margin-top:1px}
+.opt:hover:not(:disabled),.opt:focus-visible{border-color:var(--accent);outline:none;transform:translateX(2px)}
+.opt:hover:not(:disabled) .k{border-color:var(--accent);color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.right .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)} .opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.explain{margin-top:18px;padding:16px 18px;border-radius:16px;background:var(--surface-2);font-size:14.5px;border:1px solid var(--line-strong);border-left:2px solid var(--accent)}
+.explain b{display:block;margin-bottom:4px;font-weight:500}
+.explain.ok{border-left-color:var(--ok)} .explain.ok b{color:var(--ok)}
+.explain.bad{border-left-color:var(--bad)} .explain.bad b{color:var(--bad)}
+.deep{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line-strong);font-size:14px;line-height:1.65}
+.deep-k{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+/* result */
+.result{text-align:center;padding:6px 0 4px}
+.ring{width:176px;height:176px;margin:12px auto 6px;position:relative;display:grid;place-items:center}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:3;stroke-linecap:round}
+.ring .track{stroke:var(--line-strong)}
+.ring .fill{stroke:var(--accent);transition:stroke-dashoffset .8s ease}
+.big{font-family:var(--mono);font-size:52px;font-weight:300;line-height:1;color:var(--fg);font-variant-numeric:tabular-nums;position:relative}
+.big small{display:block;font-size:12px;color:var(--muted);margin-top:6px;letter-spacing:.1em}
+.verdict{font-size:20px;font-weight:300;margin:14px 0 4px}
+.miss{margin-top:24px;text-align:left;border-top:1px solid var(--line-strong);padding-top:16px}
+.miss h3{font-size:10.5px;margin:0 0 10px;color:var(--muted);font-weight:400;font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase}
+.miss li{margin-bottom:10px;font-size:14px}
+.miss ul{padding-left:18px;margin:0}
+/* leaderboard */
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:400}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tr.me td{color:var(--accent);font-weight:400;background:var(--accent-soft)}
+tr.me td:first-child{border-radius:8px 0 0 8px} tr.me td:last-child{border-radius:0 8px 8px 0}
+.rank{width:40px;color:var(--muted);font-family:var(--mono)}
+tbody tr:nth-child(1) .rank{color:var(--accent)}
+.empty{color:var(--muted);font-size:14px}
+.note{font-size:12.5px;color:var(--muted);margin-top:12px}
+/* gate */
+.gate{max-width:420px;margin:40px auto 0;text-align:center}
+.gate input{width:100%;font:inherit;font-size:17px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:999px;background:var(--surface-2);color:var(--fg);text-align:center;letter-spacing:.06em;margin:10px 0 0;font-weight:300}
+.gate #pw{letter-spacing:.2em}
+.gate .err{margin-top:10px}
+.gate input:focus{outline:none;border-color:var(--accent)}
+.gate .err{color:var(--bad);font-size:13px;min-height:20px}
+
+/* compact header while playing */
+body.playing header{padding:28px 6px 14px;align-items:center}
+body.playing .kicker{display:none}
+body.playing h1{font-size:clamp(22px,4vw,30px)}
+body.playing .sub{display:none}
+body.playing .who{padding-bottom:0}
+/* phone: show the whole 16:9 frame (logo intact) at the top instead of cropping it */
+@media (max-width:640px){
+  .hero-media{position:absolute;inset:auto 0 auto 0;top:0;height:auto;aspect-ratio:16/9;background:var(--bg)}
+  .hero-media video,.hero-media img{object-fit:contain;object-position:top center}
+  .hero-media::after{background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,0) 40%,rgba(20,18,15,.72) 100%)}
+  body{background:var(--bg)}
+  header{min-height:56.25vw;padding:0 6px 12px;align-content:flex-end;gap:6px}
+  h1{font-size:30px} .sub{font-size:12.5px;margin-top:6px} .kicker{font-size:9.5px;margin:0 0 6px;letter-spacing:.18em} .who{display:none}
+  body.playing header{min-height:0;padding:calc(56.25vw - 64px) 6px 12px}
+  body.playing .hero-media{opacity:.9}
+}
+@media (prefers-reduced-motion:reduce){.bar i,.ring .fill,.opt,.btn{transition:none}}
+@media (max-width:640px){.setup-grid{grid-template-columns:1fr}.setup-side{border-left:none;border-top:1px solid var(--line)}.row{grid-template-columns:1fr;gap:8px}.row-l{flex-direction:row;align-items:baseline;gap:8px;padding-top:0}.segc.four{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:22px;border-radius:18px}.card.setup{padding:0}.setup-main{padding:22px 20px}.setup-side{padding:22px 20px}}
+</style>
+
+<div class="hero-media" aria-hidden="true">
+  <video autoplay muted loop playsinline poster="assets/topglow-poster.jpg" src="assets/topglow-hero.mp4"></video>
+</div>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="kicker">TopGlow Medical · 470 kHz 射頻深層熱療</p>
+      <h1>V-Flow<span>™</span> 挑戰賽</h1>
+      <p class="sub">兩個題庫：操作與原理 300 題、銷售話術 157 題，各分初、中、高三級。答完自動上榜。</p>
+    </div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <section class="card hero gate" id="gate">
+    <div class="eyebrow">內部培訓</div>
+    <h2>輸入密碼先入到</h2>
+    <p class="note" style="margin-top:0">呢個題庫只俾 TopGlow 同事用，密碼問 Christine 攞。入名之後分數會上榜。</p>
+    <form id="gateform"><input id="nm" type="text" autocomplete="name" placeholder="你嘅名（上榜用）" aria-label="名" maxlength="20"><input id="pw" type="password" autocomplete="current-password" placeholder="密碼" aria-label="密碼"><div class="err" id="pwerr"></div><button class="btn" type="submit">入去</button></form>
+  </section>
+
+  <section class="card hero setup" id="start" hidden>
+    <div class="setup-grid">
+      <div class="setup-main">
+        <div class="row">
+          <div class="row-l"><span class="step-n">01</span><span class="row-t">題庫</span></div>
+          <div class="segc two">
+            <button class="trk opt-s" data-t="ops" aria-pressed="true"><b>操作與原理</b><small id="cnt-ops"></small></button>
+            <button class="trk opt-s" data-t="sales" aria-pressed="false"><b>銷售話術</b><small id="cnt-sales"></small></button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-l"><span class="step-n">02</span><span class="row-t">難度</span></div>
+          <div>
+            <div class="segc four">
+              <button class="lvl opt-s" data-l="1" aria-pressed="true"><b>初級</b><small>1 分一題</small></button>
+              <button class="lvl opt-s" data-l="2" aria-pressed="false"><b>中級</b><small>2 分一題</small></button>
+              <button class="lvl opt-s" data-l="3" aria-pressed="false"><b>高級</b><small>3 分一題</small></button>
+              <button class="lvl opt-s" data-l="0" aria-pressed="false"><b>混合</b><small>三級隨機</small></button>
+            </div>
+            <p class="hint" id="lvlhint"></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-l"><span class="step-n">03</span><span class="row-t">題數</span></div>
+          <div class="segc three">
+            <button class="mode opt-s" data-n="10" aria-pressed="false"><b>10</b><small>快速</small></button>
+            <button class="mode opt-s" data-n="25" aria-pressed="true"><b>25</b><small>標準</small></button>
+            <button class="mode opt-s" data-n="100" aria-pressed="false"><b>100</b><small>成級考核</small></button>
+          </div>
+        </div>
+        <details class="adv">
+          <summary><span class="step-n"></span><span>收窄範圍</span><em id="advsum">全部</em></summary>
+          <div class="cats" id="cats"></div>
+        </details>
+      </div>
+      <aside class="setup-side">
+        <div class="eyebrow">呢局</div>
+        <div class="sum-track" id="sum-track">操作與原理</div>
+        <div class="sum-level" id="sum-level">初級 · 25 題</div>
+        <dl class="sum-dl">
+          <div><dt>最高分</dt><dd id="sum-pts">25</dd></div>
+          <div><dt>預計</dt><dd><span id="sum-min">6</span> 分鐘</dd></div>
+        </dl>
+        <button class="btn start" id="go" type="button">開始</button>
+        <p class="note">隨機抽題、隨機排。答錯即刻有解釋同實際點做。</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="card hero" id="quiz" hidden>
+    <div class="progress"><div class="bar"><i id="barfill"></i></div><span class="count" id="count">1 / 10</span></div>
+    <div class="eyebrow" id="qcat"></div>
+    <p class="prompt" id="prompt"></p>
+    <div class="opts" id="opts"></div>
+    <div id="explain" hidden></div>
+    <div class="actions">
+      <button class="btn ghost" id="quit" type="button">放棄呢局</button>
+      <button class="btn" id="next" type="button" hidden>下一題</button>
+    </div>
+  </section>
+
+  <section class="card hero" id="done" hidden>
+    <div class="result">
+      <div class="eyebrow">呢局成績</div>
+      <div class="ring"><svg viewBox="0 0 170 170"><circle class="track" cx="85" cy="85" r="76"/><circle class="fill" id="ringfill" cx="85" cy="85" r="76" stroke-dasharray="477.5" stroke-dashoffset="477.5"/></svg>
+        <div class="big"><span id="score">0</span><small>/ <span id="total">0</span> 題</small></div></div>
+      <div class="verdict" id="verdict"></div>
+      <div id="savemsg" class="note"></div>
+    </div>
+    <div class="miss" id="miss"></div>
+    <div class="actions" style="justify-content:center">
+      <button class="btn" id="again" type="button">再嚟一局</button>
+    </div>
+  </section>
+
+  <section class="card" id="boardcard" hidden>
+    <div class="eyebrow">排行榜</div>
+    <h2>邊個最熟 V-Flow</h2>
+    <div id="board"><p class="empty">未有人上榜。玩一局就會出現喺度。</p></div>
+    <p class="note">排名以「累積分」計：初級每題 1 分、中級 2 分、高級 3 分，答對先有分，每一局都累積。同分就睇答對率。名係自己入嘅，同一個名會合併計。</p>
+  </section>
+</div>
+
+<script>
+const BANKS = {
+  ops: { name:"操作與原理", cats:["機器與原理","模式與電極","操作 SOP","原廠療程與參數","Onda 配合","禁忌與安全"], q: [
+[0, 1, "V-Flow 嘅射頻頻率係？", "470 kHz", "448 kHz", "我哋部機係 470 kHz；448 kHz 係 INDIBA 嘅專利數字，舊網頁抄錯咗。兩個數同一檔，但對外要統一講 470。", "見到任何資料寫 448，報俾 marketing 改。客人問分別，答「差 5%，體感一樣」。"],
+[0, 1, "機器最大輸出係？", "300 W", "200 W", "最大輸出 300 W。實際用緊幾多 W 由強度同客人阻抗決定，顯示喺螢幕。", "螢幕 W 數係你嘅儀錶板：同預期差太遠就係接觸或者插頭問題。"],
+[0, 1, "機器有幾多個輸出端口？", "4 個：RET、CET、PLATE、BIPOLAR", "3 個：RET、CET、BIPOLAR", "四個端口，PLATE 係俾迴路板插嘅，CET／RET 單極模式必用。", "開機前對一對：黑頭入 CET 手棒、銀頭入 RET 手棒、迴路板插 PLATE。"],
+[0, 1, "螢幕有幾多個模式？", "6 個：RET A／B／C、CET NORMAL／DEEP、BIPOLAR", "5 個：RET A／B、CET NORMAL／DEEP、BIPOLAR", "原廠操作手冊 P.10 列明 6 個模式，RET 有 A、B、C 三個。", "RET A 痛症、B 一般減脂淋巴、C 厚實脂肪 BMI>30；CET NORMAL 淺層、DEEP 深層；BIPOLAR 面胸。"],
+[0, 1, "廠方描述核心溫度升高幾多？", "5–7°C", "2–3°C", "廠方 brochure 寫「體內核心溫度升高 5–7°C」，可以引用但要註明廠方資料。", "網頁舊版「42–45°C 細胞凋亡」冇出處，唔好用。"],
+[0, 1, "廠方描述血液循環增加幾多？", "4–5 倍", "2–3 倍", "Brochure 寫血液循環增加 4–5 倍，有廠方支持。", "配合「促進循環」定位，對客可以講，加「廠方資料」。"],
+[0, 1, "螢幕可以監控客人嘅咩？", "阻抗", "皮膚溫度", "7 吋觸控屏監控療程中客人嘅阻抗，輸出 W 由強度同阻抗決定。皮溫要用紅外線探溫計另外量。", "試行版暖身要量皮溫，係用探溫計，唔係睇螢幕。"],
+[0, 1, "頻率越低，電流嘅特性係？", "走得越深、熱得越散", "走得越淺、熱得越集中", "低頻深而散，高頻淺而集中。幾百 kHz 係行得最深、最溫和嗰一檔。", "所以 V-Flow 做肌肉筋膜循環好，做真皮拉提唔及高頻機。"],
+[0, 1, "射頻嘅熱係喺邊度產生？", "組織自己發熱（電流遇阻抗）", "電極頭發熱傳入皮膚", "電流穿過組織遇到阻抗就發熱，熱由內而外。電極頭本身唔係熱源。", "客人問同暖包分別，就係呢點：暖包由外熱入，射頻由內熱出。"],
+[0, 1, "點解幾百 kHz 唔會有電擊感？", "頻率太快，神經跟唔上，只變成熱", "電壓低過神經感應門檻", "神經只對低頻電流有反應，去到幾十萬 Hz 已經追唔上，淨係剩低熱。", "客人做 RET 話「麻」，唔係電，係接觸唔好令電流集中，要檢查迴路板同 cream。"],
+[1, 1, "CET 電極嘅顏色係？", "黑色（有絕緣塗層）", "銀色（金屬）", "CET 有絕緣塗層所以黑色，RET 係銀色金屬。記「黑 C 銀 R」。", "插錯：CET 模式用銀頭會熱得唔正常，RET 模式用黑頭會唔熱。"],
+[1, 1, "CET 電極有幾多個尺寸？", "5 個：20／30／40／60／80", "3 個：30／60／80", "CET 五個尺寸，RET 只有 30／60／80 三個。CET 20 錐形頭冇 RET 版本。", "眼部、頭皮永遠係 CET，因為 RET 冇細過 30 嘅頭。"],
+[1, 1, "RET 電極有幾多個尺寸？", "3 個：30／60／80", "5 個：20／30／40／60／80", "RET 三個尺寸，CET 先有五個。", "RET 30 做手指膝蓋，RET 60 做背手臂小腿肚，RET 80 做大腿厚脂肪肚。"],
+[1, 1, "CET 60 最常用喺邊啲部位？", "背、小腿、肚", "大腿、厚脂肪肚", "CET 60 係最常用嘅黑頭，做背、小腿、肚；大腿同厚脂肪肚用 CET 80。", "面積越大用越大頭，熱得均勻。"],
+[1, 1, "CET 30 用喺邊？", "面、頸", "手臂、膝蓋", "CET 30 做面、頸；CET 40 做手臂、膝蓋；CET 20 做頭皮、眼部。", "面部疏通修面型就係 CET 30 流程。"],
+[1, 1, "RET 30 用喺邊？", "手指、膝蓋", "背、手臂、小腿", "RET 30 係最細銀頭，做手指膝蓋；背手臂小腿肚用 RET 60。", "細頭能量集中，強度要低、移動要快。"],
+[1, 1, "RET 80 用喺邊？", "大腿、厚脂肪肚", "背、小腿", "RET 80 做大腿同厚脂肪肚，配 C 模式俾 BMI>30。", "瘦客唔用 RET 80，熱得太集中。"],
+[1, 1, "CET 20 mm 係咩形狀、做邊度？", "錐形，頭皮同眼部", "圓平頭，面同頸", "CET 20 係錐形細頭，做頭皮、眼部。面頸係 CET 30。", "做眼用 CET 20／30，強度 30–50 由最低開始。"],
+[1, 1, "護蓋係配邊個頭用？", "RET 60／80", "CET 60／80", "箱入面 2 個護蓋係配 RET 60 同 80，唔好當電極頭插落去。", "BeautiSky 培訓時要佢指清楚邊個係護蓋。"],
+[1, 1, "鬆筋刀有幾多款、接邊個端口？", "3 款，接 RET", "3 款，接 CET", "鬆筋刀 3 款全部接 RET 端口，一定要貼迴路板。", "1 號背大腿、2 號小腿手臂、3 號肩頸關節。"],
+[1, 1, "鬆筋刀 3 號做邊度？", "肩頸、關節", "小腿、手臂", "3 號肩頸關節；2 號小腿手臂；1 號背大腿。", "做肩頸揀 3 號，避開頸中央。"],
+[1, 1, "鬆筋刀 1 號做邊度？", "背、大腿", "肩頸、關節", "1 號大面積：背、大腿。", "做背用 1 號，唔好用 3 號細刀慢慢推。"],
+[1, 1, "Bipolar 頭有幾多粒、使唔使迴路板？", "6 粒，唔使迴路板", "6 粒，要迴路板", "Bipolar 兩極都喺同一個頭，6 粒波頭，唔使迴路板。CET／RET 先要。", "插 BIPOLAR 端口 → 揀 BIPOLAR 模式 → 塗足 cream → 6 粒頭全部貼住。"],
+[1, 1, "RET A 模式原廠用途係？", "痛症（肩頸、背）", "一般減脂、淋巴", "A 痛症、B 一般減脂淋巴橙皮、C 厚實脂肪。", "RET A 配 RET 60 或鬆筋刀，輸出約 40–60 W。"],
+[1, 1, "RET B 模式原廠用途係？", "一般減脂、淋巴、橙皮組織", "厚實脂肪、BMI > 30", "B 係一般肥胖類型，亦用喺淋巴同橙皮；C 先係 BMI>30。", "肚第二步 RET 60 B，約 100 W。"],
+[1, 1, "CET DEEP 用喺邊類組織？", "深層／硬組織：關節、肌腱、背部、內臟脂肪、橙皮", "表淺／軟組織：面部、淋巴、皮下脂肪", "DEEP 深層硬組織，NORMAL 表淺軟組織。", "肚減脂第一步 CET 60 DEEP；淋巴療程第一步 CET 60 NORMAL。"],
+[1, 1, "邊兩個模式一定要貼迴路板？", "CET 同 RET", "RET 同 BIPOLAR", "CET、RET 係單極，要迴路板成迴路；Bipolar 唔使。", "冇貼迴路板機器輸出唔到熱。"],
+[2, 1, "強度刻度範圍係？", "10–100", "0–100", "強度 10 到 100，雙箭咀 ±10，單箭咀 ±1。", "前線：升用單箭咀 +5，降用雙箭咀 −10。"],
+[2, 1, "「« »」雙箭咀每按一下係？", "±10", "±5", "雙箭咀 ±10，單箭咀 ±1。", "客人 8 分就雙箭咀按一下 −10。"],
+[2, 1, "按 STOP 之後時間會變做？", "10 分鐘", "15 分鐘", "按 STOP 會自動返回 10 分鐘，用 ∧／∨ 調。", "做 15 分鐘原廠療程記得每次重新 set。"],
+[2, 1, "連續用 1 小時之後要？", "待機 10 分鐘散熱", "待機 30 分鐘散熱", "原廠規定連續 1 小時待機 10 分鐘。", "排 booking 每 5–6 個部位留 10 分鐘。"],
+[2, 1, "C1／C2／C3 儲存嘅係？", "常用強度", "常用時間", "C1–C3 係強度記憶位：揀位 → 調強度 → SAVE。", "熟客到位嘅強度存低，下次由低少少開始。"],
+[2, 1, "RET Cream 嘅牌子係？", "Dr.Lubis（原廠）", "任何水性導電啫喱", "必須用原廠 RET Cream，導電性同滑度啱部機。", "cream 唔夠嘅症狀：電極澀、客人話某點刺。"],
+[2, 1, "單獨做 V-Flow 嘅熱度目標？", "6–7 分", "4–5 分", "6–7 係單獨 V-Flow 目標；4–5 係 Onda 前暖身目標。", "唔係越熱越好，8 分就要降。"],
+[2, 1, "Onda 前暖身（試行版）嘅熱度目標？", "4–5 分", "6–7 分", "試行版暖身只去 4–5 分，低強度，重點放鬆。", "之後等皮溫回落先 Onda。"],
+[2, 1, "幾耐問一次熱度？", "每 30–60 秒", "每 2–3 分鐘", "每 30–60 秒問一次，熱力積聚得快。", "推完一個區域就問一句。"],
+[2, 1, "客人未到目標熱度，應該升幾多？", "單箭咀 +5", "雙箭咀 +10", "升要慢：+5 等 30 秒再問。+10 好易過頭。", "唔好超過療程表範圍上限。"],
+[2, 1, "客人話 8 分，應該降幾多？", "雙箭咀 −10", "單箭咀 −5", "8 分係熱刺想縮，要快降 −10，同時補 cream、移快啲。", "紀錄低，下次由更低開始。"],
+[2, 1, "第一次做、怯熱、瘦、近骨位嘅客人由幾多開始？", "範圍最低數再 −10", "範圍最低數", "新客瘦客近骨位要比範圍最低再低 10。", "例如 50–70 就由 40 開始。"],
+[2, 1, "RET B（RET 60）正常輸出大約？", "約 100 W", "約 50–60 W", "RET B 約 100 W；CET 60 先係 50–60 W。", "得 25 W 係接觸問題，唔係強度問題。"],
+[2, 1, "CET 60 正常輸出大約？", "約 50–60 W", "約 100 W", "CET 60 約 50–60 W；RET B 約 100 W；RET C 100–140 W；RET A 40–60 W；CET 20 約 40 W。", "面部見到 100 W 就係用錯頭或模式。"],
+[2, 1, "電極離開皮膚之前要？", "先 PAUSE", "先降強度到 10", "離開皮膚前 PAUSE，唔好仲輸出緊就拎起。降強度唔係正確做法。", "換頭、補 cream、調迴路板都係 PAUSE → 做 → 貼返 → RUN。"],
+[2, 1, "迴路板做肚時貼邊？", "腰背或臀部", "大腿前面", "迴路板貼治療位附近肌肉多嘅位：做肚貼腰背／臀，做背貼肚或大腿。", "全塊貼實，唔好有摺。"],
+[2, 1, "Bipolar 推法方向？", "由下向上、由中間向外", "由中間向外、由上向下", "下巴→耳、嘴角→太陽穴、頸由下向上。", "6 粒頭全部貼住先推。"],
+[2, 1, "鬆筋刀每條線推幾多次？", "3–5 次", "8–10 次", "每條線 3–5 次，力度中等，唔刮紅。", "推完一條線問一次熱度。"],
+[2, 1, "鬆筋刀嘅 cream 份量？", "比平時多（約 1.5–2 倍）", "同平時一樣", "鬆筋刀接觸面大、推得長，cream 要多，否則澀、刮紅。", "見到澀即刻補。"],
+[2, 1, "做完後皮膚均勻輕微泛紅係？", "正常，短時間消退", "局部過熱，要紀錄報上司", "均勻微紅正常；一粒粒紅點、水泡、局部刺痛先係過熱。", "分得清兩種紅先識處理。"],
+[2, 1, "做完後要提醒客人當日避免？", "熱水浴、桑拿、激烈運動", "飲凍水、食生冷", "術後注意（待 BeautiSky 確認）：避免熱水浴桑拿激烈運動，建議飲水。", "每次做完講一次。"],
+[3, 1, "原廠建議減脂、痛症幾密？", "每週 2 次", "每週 1 次", "減脂、橙皮、痛症每週 2 次；面部、淋巴每週 1 次。", "4–6 次一組。"],
+[3, 1, "原廠建議面部、淋巴幾密？", "每週 1 次", "每週 2 次", "面部淋巴每週 1 次；減脂痛症每週 2 次。", "Face 客每週一次啱啱用晒 10 次。"],
+[3, 1, "Bipolar 原廠建議強度？", "60–70", "40–60", "Bipolar 60–70；鬆筋刀先係 40–60。", "面部熱度目標 5–6 分，唔去 7。"],
+[3, 1, "鬆筋刀原廠建議強度（一般部位）？", "40–60", "60–70", "鬆筋刀 40–60；肩頸 30–40；手掌手指 20–30。", "由範圍最低開始。"],
+[3, 1, "鬆筋刀做肩頸嘅強度？", "30–40", "40–60", "肩頸要比一般低：30–40。", "避開頸中央。"],
+[3, 1, "鬆筋刀做手掌手指嘅強度？", "20–30", "30–40", "手骨多肉少，20–30。", "由 20 開始每 30 秒問。"],
+[3, 1, "原廠腹部減肥第一步？", "CET 60 DEEP 5 分", "CET 60 NORMAL 5 分", "肚第一步 CET 60 DEEP（硬組織）5 分熱身，再 RET 60 B 10 分。", "淋巴療程先用 NORMAL。"],
+[3, 1, "原廠腹部減肥第二步？", "RET 60 B 10 分", "RET 60 A 10 分", "第二步 RET 60 B（一般減脂）10 分；A 係痛症。", "厚脂肪用 RET 80 C。"],
+[3, 1, "原廠淋巴療程係？", "CET 60 NORMAL 5 分 → RET 60 B 15 分", "CET 60 DEEP 5 分 → RET 60 A 15 分", "淋巴：NORMAL → B；痛症：DEEP → A；橙皮：DEEP → B。", "Onda 後引流用淋巴療程。"],
+[3, 1, "原廠痛症療程係？", "CET 60 DEEP 5 分 → RET 60 A 10 分", "CET 60 DEEP 5 分 → RET 60 B 10 分", "痛症第二步用 A 模式（最溫和 RET）。", "對外講「紓緩肌肉繃緊」。"],
+[3, 1, "原廠橙皮組織療程係？", "CET 60 DEEP 5 分 → RET 60 B 10 分", "CET 60 NORMAL 5 分 → RET 60 B 15 分", "橙皮：DEEP → B 10 分；淋巴先係 NORMAL → B 15 分。", "每週 2 次。"],
+[3, 1, "原廠面部 CET 20 NORMAL 參數？", "50–55，約 40 W，5 分", "60–70，約 60 W，10 分", "面 CET 20 NORMAL 50–55、約 40 W、5 分；Bipolar 60–70、10 分。", "面部 W 數細係正常。"],
+[3, 1, "原廠減脂 RET 60 B 參數表強度？", "75–90", "55–80", "參數表 RET 60 B 75–90、約 100 W；CET 60 DEEP 先係 55–80。", "腹部療程表寫 40–60 起步，前線由低嗰個開始。"],
+[3, 1, "原廠減脂 CET 60 DEEP 參數表強度？", "55–80", "75–90", "CET 60 DEEP 55–80、約 60 W；RET 60 B 先係 75–90。", "由 55 開始 +5 升。"],
+[3, 1, "RET 80 C 嘅輸出大約？", "100–140 W", "60–80 W", "RET 80 C 最強，100–140 W。", "見到 140 W 以上要密問熱度。"],
+[3, 1, "原廠一組療程幾多次？", "4–6 次", "8–10 次", "原廠 4–6 次一組；每週 1–2 次。", "做完一組同前相比較。"],
+[3, 1, "原廠肩頸紓緩第一步係？", "CET 60 背部膀胱經 5 分", "CET 60 肩頸 5 分", "肩頸：先 CET 60 做背部膀胱經 5 分熱身，再 RET 60／鬆筋刀肩頸 10 分，避開頸中央。", "所有身體療程都係先膀胱經熱身。"],
+[3, 1, "Bipolar 面部膠原緊緻原廠時間？", "15 分鐘（參數表寫 10 分）", "20 分鐘", "療程表 15 分，參數表 10 分，兩份唔一致；我哋對客 10 分鐘一次。", "唔好自己加時。"],
+[4, 1, "DEKA 寫同一位置 Onda 至少相隔幾耐？", "15 日", "7 日", "Hoffmann 2024：同一位置至少相隔 15 日；我哋排每 3–4 週。", "客人想快啲再 Onda，答至少 15 日。"],
+[4, 1, "已有硬粒，DEKA 建議淋巴引流幾密？", "每週 2–3 次、至少 3 星期", "每週 1 次、6 星期", "已有硬粒 → 每週 2–3 次、至少 3 週。", "V-Flow 淋巴療程係我哋加咗熱嘅引流。"],
+[4, 1, "Onda 當日做完即刻做咩？", "手做 5 分鐘淋巴引流，唔開機", "V-Flow 淋巴療程 10 分鐘，同一格", "Onda 當日同一格只做手動引流，唔開機唔收費。", "V-Flow 同一格要等紅腫退。"],
+[4, 1, "Onda 之後 V-Flow 淋巴療程建議幾密？", "紅腫退後每週 2 次 × 3 星期", "Onda 翌日起每週 1 次 × 4 星期", "紅腫退咗（幾日）先開始，每週 2 次 × 3 週 = 6 次。", "第 4 週再 Onda。"],
+[4, 1, "Per-V 做完幾耐先開始 Bipolar？", "至少 1 星期", "至少 3 日", "Per-V 後至少 1 週（待醫生確認），唔同日同位。", "即刻幫佢約一週後。"],
+[4, 1, "試行版 B 等皮溫回落大約幾耐？", "10–15 分鐘", "3–5 分鐘", "抹乾 cream 後用紅外線探溫計量，約 10–15 分鐘回落正常先 Onda。", "未回落唔開 Onda。"],
+[4, 1, "試行版 B 入面 Onda 劑量係？", "照標準 130–150 kJ", "減到 100 kJ", "Onda 劑量照標準，到 41°C 降功率唔降 kJ。", "紀錄 W、kJ、有冇提早停。"],
+[5, 1, "以下邊個係原廠禁忌？", "哺乳", "經期", "懷孕、哺乳、卵巢囊腫係禁忌；經期唔係。", "約客問「有冇懷孕或哺乳？」"],
+[5, 1, "以下邊個係原廠禁忌？", "高血壓", "低血壓", "高血壓係禁忌，唔分輕重、有冇食藥；低血壓冇列。", "「促進循環」客群好多高血壓，約客必問。"],
+[5, 1, "以下邊個係原廠禁忌？", "糖尿病", "高膽固醇", "糖尿病係禁忌（感覺可能遲鈍）；高膽固醇冇列。", "糖尿病客人唔可以靠熱度分數。"],
+[5, 1, "以下邊個係原廠禁忌？", "正服用阿司匹林", "正服用維他命", "阿司匹林或血液紊亂係禁忌。", "薄血藥都要問。"],
+[5, 1, "以下邊個係原廠禁忌？", "癲癇", "偏頭痛", "癲癇、腦部疾病、神經性疾病係禁忌；偏頭痛冇列，但要問清楚。", "唔分「幾耐冇發作」。"],
+[5, 1, "以下邊個係原廠禁忌？", "肝病", "胃病", "肝病係禁忌；胃病冇列。", "約客問「有冇長期病」。"],
+[5, 1, "以下邊個係原廠禁忌？", "皰疹發作", "暗瘡（輕度）", "皰疹係禁忌；嚴重濾泡性痤瘡先係禁忌，輕度暗瘡唔係。", "發作緊就改期。"],
+[5, 1, "以下邊個係原廠禁忌？", "正接受化療", "曾經做過手術（已癒合）", "癌症、正接受電療或化療係禁忌；已癒合舊手術唔係，但要確認冇金屬植入。", "問清楚植入物。"],
+[5, 1, "以下邊個係原廠禁忌？", "長期用類固醇", "偶然食止痛藥", "正接受藥物治療（包括類固醇）、長期用非甾類抗炎藥係禁忌；偶然食止痛藥要問清楚。", "長期 vs 偶然要分。"],
+[5, 1, "以下邊個係原廠禁忌？", "發燒", "感冒已好返一週", "發燒、急性病、突發性皮炎係禁忌。", "嚟到有燒直接改期。"],
+[5, 1, "以下邊個係原廠禁忌？", "開放性傷口喺治療位", "舊疤痕（已癒合）", "開放傷口、治療區域受感染係禁忌；舊疤唔係。", "有傷口改做其他部位。"],
+[5, 1, "以下邊個係原廠禁忌？", "最近做過眼角膜手術", "戴眼鏡", "近期眼角膜手術或眼科治療係禁忌。", "做眼周前問。"],
+[5, 1, "以下邊個係原廠禁忌？", "心臟起搏器", "曾經心律不正（已治癒）", "起搏器、植入式除顫器、任何植入式電器係絕對禁忌。", "唔分部位。"],
+[5, 1, "以下邊個係原廠禁忌？", "嚴重濾泡性痤瘡", "油性皮膚", "嚴重濾泡性痤瘡、全身或局部皮膚病（影響癒合）係禁忌。", "面唔做，其他部位可考慮。"],
+[5, 1, "以下邊個係我哋額外加嘅注意事項？", "近期打肉毒／填充嘅位置", "近期曬太陽", "額外注意：治療位有金屬植入物、產後（醫生評估）、近期填充肉毒嘅位置。", "問邊個位、幾耐前。"],
+[5, 1, "開始前客人要除咩？", "所有金屬飾物", "只係治療位附近嘅飾物", "電流經成個身體走，所有金屬飾物都要除。", "手錶、手鏈、耳環、戒指。"],
+[5, 1, "客人用緊發熱墊／電毛氈，應該？", "關掉先做", "可以同時用", "原廠注意：關掉發熱墊／電毛氈，會影響熱度判斷。", "冬天特別留意。"],
+[5, 1, "電極頭有劃痕應該？", "唔用，報上司換", "可以用，塗多啲 cream", "損壞或劃痕嘅頭可能有火花傷皮膚。", "每日開機前檢查。"],
+[1, 2, "肚脂肪厚實、BMI > 30，第二步用？", "RET 80 C", "RET 60 B", "厚實脂肪用大頭加 C 模式；一般肚先係 RET 60 B。", "C 模式 100–140 W，問熱度要密。"],
+[1, 2, "肚「硬實」但脂肪一般，第二步可以用咩代替 RET 60？", "鬆筋刀沿恥骨、腹部向下推", "RET 80 C", "硬實脂肪原廠建議可用鬆筋刀代替 RET 頭；C 模式係俾厚脂肪。", "硬 ≠ 厚。"],
+[1, 2, "面部「修面型」用邊個頭同流程？", "CET 30：雙下巴→耳珠→鎖骨 3 分、額頭三行 2 分、全面提拉 8 分、腮位向內 2 分", "Bipolar：全面向上提拉 15 分", "修面型係 CET 30 疏通流程（40–50）；緊緻先係 Bipolar。", "問客人想輪廓清啲定皮膚緊啲。"],
+[1, 2, "眼腫用邊個頭、做邊個位？", "CET 20 眉骨底按摩 10 分", "CET 30 眉肌向上提拉 10 分", "眼部：CET 30 眼肚分 3 行 5 分，然後眼腫 → CET 20 眉骨底；緊緻 → CET 30 眉肌提拉。", "唔壓眼皮，強度 30–50 由最低開始。"],
+[1, 2, "頭部療程嘅次序？", "CET 60 背 3 分 → CET 30／40 頸 4 分 → CET 20 頭皮 8 分", "CET 20 頭皮 8 分 → CET 30／40 頸 4 分 → CET 60 背 3 分", "由背開通道去頸再去頭。", "頭皮用最細頭、較低強度。"],
+[1, 2, "小腿療程 CET 60 先做邊三個位？", "腹股溝、膝內側、腳眼各 1 分", "小腿肚、腳眼、腳底各 1 分", "三個淋巴結位先開通道，再鬆筋刀小腿向上推 12 分。", "腳眼近骨用低強度。"],
+[1, 2, "手臂療程鬆筋刀分段時間？", "肩臂 2、腋下 2、前臂 3、全臂 5 分", "肩臂 5、腋下 2、前臂 3、全臂 2 分", "先 CET 60 背 3 分，然後 2／2／3／5，共 15 分。", "用 2 號鬆筋刀。"],
+[1, 2, "臀部療程鬆筋刀做邊兩個位？", "盆骨關節 5 分、臀部外側 5 分", "臀部中央 5 分、大腿後 5 分", "先 CET 60 膀胱經 5 分，再鬆筋刀盆骨關節同臀部外側各 5 分。", "坐骨神經痛症先睇醫生。"],
+[1, 2, "背部疏通 RET 60 嘅方向同強度？", "由下至上，50–60", "由上至下，50–80", "CET 60 膀胱經 5 分（50–80），RET 60 由下至上 10 分（50–60）。", "避開脊椎正上面。"],
+[1, 2, "大腿療程 CET 60 先做邊度？", "腹股溝 1 分、膝內側 1 分", "大腿前 1 分、大腿後 1 分", "先開腹股溝同膝內側淋巴位，再 RET 60 或鬆筋刀 13 分。", "減脂用 RET 60，鬆筋用鬆筋刀。"],
+[1, 2, "胸部療程次序？", "CET 60 腋下 1、副乳 2、底線 2 分 → Bipolar 向上提拉 10 分", "Bipolar 10 分 → CET 60 腋下副乳底線 5 分", "先 CET 60 開腋下副乳底線，再 Bipolar，避開乳暈。", "有植入物唔做。"],
+[1, 2, "面部疏通（CET 30）嘅強度？", "40–50", "60–70", "面部疏通 40–50；Bipolar 先係 60–70。", "面部目標 5–6 分。"],
+[1, 2, "眼部療程嘅強度範圍？", "30–50", "50–55", "眼部 30–50；面部 CET 20 NORMAL 參數表先係 50–55。", "由 30 開始。"],
+[1, 2, "CET 模式用咗銀色頭會點？", "熱得唔正常，可能局部過熱", "熱得慢，要升強度", "銀頭冇絕緣，CET 模式會直接傳導過熱。", "一開機就好熱 → 先檢查頭嘅顏色。"],
+[1, 2, "RET 模式用咗黑色頭會點？", "幾乎唔熱", "熱得太快", "黑頭有絕緣層，RET 模式電流傳唔到。", "點都唔熱 → 檢查頭同手棒。"],
+[1, 2, "鬆筋刀做大腿外側用邊款？", "1 號", "2 號", "1 號背大腿；2 號小腿手臂。", "靜脈曲張位跳過。"],
+[1, 2, "做手臂鬆筋刀用邊款？", "2 號", "1 號", "2 號小腿手臂。", "腋下位用低強度。"],
+[1, 2, "「熱手按摩」嘅做法？", "治療師一手拎 RET 電極，另一隻手喺客人身上推", "治療師兩隻手各拎一個 RET 電極", "熱力經治療師隻手傳出，客人感覺似暖手按摩。", "demo 最有效嘅招。"],
+[2, 2, "換頭嘅正確次序？", "PAUSE → 拎起 → 換頭 → 貼返皮膚 → RUN", "降強度 → 拎起 → 換頭 → 貼返 → 升返強度", "離開皮膚前 PAUSE，唔係降強度。", "CET 轉 RET 嗰下最易忘記。"],
+[2, 2, "開始前嘅次序？", "篩禁忌、簽同意書 → 除金屬 → 影相量尺寸 → 貼迴路板 → 塗 cream", "貼迴路板 → 塗 cream → 影相 → 簽同意書", "先篩查同簽署，再準備身體，最後貼板塗 cream。", "新客必做，熟客口頭再問一次。"],
+[2, 2, "完成後嘅次序？", "抹 cream → 觀察皮膚 → 提醒飲水同術後注意 → 影後相 → 約下次 → 清潔電極迴路板", "影後相 → 抹 cream → 清潔 → 約下次", "後相要抹咗 cream 先影，cream 反光。", "清潔電極同迴路板每次都做。"],
+[2, 2, "強度嘅升降策略？", "由範圍最低開始，+5 逐級升，8 分即 −10", "由範圍中間開始，±10 調整", "升慢降快：單箭咀 +5 等 30 秒；雙箭咀 −10。", "唔超範圍上限。"],
+[2, 2, "到目標熱度之後要？", "紀錄當時強度，可存 C1–C3，下次由低啲開始", "維持 2 分鐘後再 +5 加強效果", "到 6–7 就保持同紀錄，唔係繼續升。", "紀錄表寫齊 7 項。"],
+[2, 2, "紀錄表要寫邊啲？", "模式、電極、強度、W、時間、熱度分數、皮膚反應", "模式、電極、強度、時間", "7 項齊，W 同熱度分數同皮膚反應都要。", "每個部位做完即刻寫。"],
+[2, 2, "客人話某一點特別熱，最可能原因？", "電極停咗或者行得太慢", "強度升得太快", "停喺一點能量集中。即刻移開、補 cream、移快、降強度。", "傾偈時手最易停。"],
+[2, 2, "客人話迴路板嗰度熱，原因？", "迴路板貼唔實、有摺、或貼咗骨位", "治療位強度太高", "電流集中喺迴路板。PAUSE 重貼喺肌肉多嘅位。", "唔好升治療位強度。"],
+[2, 2, "做背時迴路板貼邊？", "肚或大腿", "腰背另一側", "治療位附近肌肉多嘅位：做背貼肚或大腿。", "客人趴住就貼大腿後側。"],
+[2, 2, "做膝蓋時迴路板貼邊？", "大腿", "小腿", "近治療位、肌肉多：大腿。", "膝蓋用 RET 30 低強度。"],
+[2, 2, "同一客人做肚再做背，迴路板？", "要換位：做肚貼腰背，做背貼肚或大腿", "唔使換，貼腰背兩個都得", "迴路板要跟治療位走。", "換位前 PAUSE。"],
+[2, 2, "眼周做法？", "只做眼眶骨外圍，唔壓眼皮，強度再低啲", "眼皮輕力做，強度同面部一樣", "眼皮唔做，眼眶骨外圍低強度。", "隱形眼鏡除咗先。"],
+[2, 2, "Bipolar 做胸部要避開？", "乳暈", "腋下", "胸部：CET 60 做腋下副乳底線，Bipolar 向上提拉避開乳暈。", "有植入物唔做。"],
+[2, 2, "鬆筋刀唔可以做邊啲位？", "脊椎骨正上面、骨突位、頸前、靜脈曲張", "大腿外側、臀部外側", "骨位、頸前、靜脈曲張唔做；大腿外側臀部外側係正常範圍。", "肩頸避開頸中央。"],
+[2, 2, "鬆筋刀手勢？", "沿肌肉方向長線推，每條線 3–5 次，力度中等", "橫過肌肉方向短推，每條線 8–10 次", "順肌肉方向長線，3–5 次，唔刮紅。", "似刮痧但目標唔係出痧。"],
+[2, 2, "客人熱度 4–5 分，單獨做 V-Flow 時應該？", "繼續 +5 升到 6–7", "保持，4–5 係目標", "單獨 V-Flow 目標 6–7；4–5 只係 Onda 前暖身目標。", "等 30 秒再問。"],
+[2, 2, "客人熱度 7 分，應該？", "保持，紀錄", "−5 降返 6", "6–7 都係目標範圍，7 唔使降；8 先降。", "面部例外：目標 5–6。"],
+[2, 2, "面部 Bipolar 熱度目標？", "5–6 分", "6–7 分", "面部皮膚薄，目標 5–6；身體先係 6–7。", "每 30 秒問。"],
+[2, 2, "糖尿病客人點解唔可以靠熱度分數？", "感覺可能遲鈍，報分唔準，會燙傷", "佢哋對熱特別敏感，會報得太高", "糖尿病係禁忌，而且感覺遲鈍令整套安全機制失效。", "交醫生，唔做。"],
+[2, 2, "連續排 6 個客各做 10 分鐘，點排？", "每 5–6 個部位之間留 10 分鐘散熱", "做完 6 個再散熱 20 分鐘", "連續 1 小時要待機 10 分鐘。", "散熱時間做影相量尺寸。"],
+[3, 2, "一次 V-Flow 嘅時間同面積？", "1 部位 10 分鐘，約 15×15 cm", "1 部位 15 分鐘，約 20×20 cm", "公司定 1 次 = 1 部位 10 分鐘，15×15 cm 同 Onda 一格差唔多。原廠療程約 15 分。", "如果改做 15 分會收到通知。"],
+[3, 2, "部位定義：肚、腰、背、肩頸、一邊大腿、一對手臂？", "各算 1 個部位", "肚腰算 1、一邊大腿算半個", "每樣各 1；全面包眼周 1；頸＋胸口 1。", "兩邊大腿 = 2，一對手臂 = 1。"],
+[3, 2, "原廠「減脂」RET 時間？", "15–30 分", "10 分", "減脂 RET 60 B 15–30 分；橙皮先係 10 分。我哋一次 10 分一部位。", "原廠時間係治療師參考。"],
+[3, 2, "原廠參數表減脂 CET 60 DEEP 同腹部療程表寫嘅強度點解唔同？", "參數表係範圍上限（55–80），療程表係起步（50–70）；前線由最低開始", "兩份文件其中一份印錯", "兩份文件唔一致，前線原則係由較低範圍最低數開始，唔超較高範圍上限。", "RET 60 B 都係：療程表 40–60，參數表 75–90。"],
+[3, 2, "原廠痛症療程 RET 60 A 嘅輸出？", "約 40–60 W", "約 100 W", "A 模式最溫和，40–60 W；B 先係 100 W。", "肩頸見到 100 W 就係揀錯 B。"],
+[3, 2, "原廠淋巴療程 RET 60 B 嘅強度同時間？", "60–80，15 分", "75–90，10 分", "淋巴 RET 60 B 60–80、15 分；橙皮先係 75–90、10 分。", "Onda 後引流用呢個。"],
+[3, 2, "面部膠原緊緻（Bipolar）頻率同組數？", "每週 1 次，4–6 次一組", "每週 2 次，8 次一組", "面部每週 1 次，4–6 次一組。", "Per-V 後一週開始。"],
+[4, 2, "同日做兩部機嘅正確做法？", "Onda 做主力部位，V-Flow 做另一個部位", "Onda 做主力部位，V-Flow 同一格低強度跟尾", "做法 A：唔同部位。同一格先後疊做暫時唔做。", "Onda 後同一格只手動引流 5 分鐘。"],
+[4, 2, "點解唔建議預熱後做 Onda？", "皮膚更快到 41°C 上限，要提早降功率，可能做唔足 kJ", "預熱會令脂肪層阻抗下降，Onda 熱唔到", "Onda 效果由 kJ 決定；預熱令皮溫早到上限，反而做唔足劑量仲有燒傷風險。", "DEKA 協議冇預熱步驟。"],
+[4, 2, "同一格「先 Onda 後 V-Flow」點解唔做？", "Onda 後組織仲熱、有輕微發炎，再加熱有風險", "V-Flow 會抵銷 Onda 嘅微波效果", "Onda 後組織發炎緊，再射頻係火上加油。", "試行版只係先 V-Flow 低強度暖身。"],
+[4, 2, "試行版 B 嘅流程？", "V-Flow 10 分低強度（4–5 分）→ 抹 cream → 皮溫回落 10–15 分 → Onda 標準 kJ", "V-Flow 10 分（6–7 分）→ 即刻 Onda 標準 kJ", "暖身只去 4–5 分，要等皮溫回落先 Onda。", "做 10 個客紀錄先決定。"],
+[4, 2, "試行版 B 皮溫到 41°C 時應該？", "降功率、延長時間，唔降 kJ", "降 kJ、縮短時間", "Onda 效果由 kJ 決定，降功率唔降 kJ。", "紀錄 W、kJ、提早停。"],
+[4, 2, "Onda 肚 2 格排期範例？", "第 0 週 Onda ＋ 手引流 → 第 1–3 週 V-Flow 每週 2 次 → 第 4 週 Onda", "第 0 週 Onda → 第 1 週休息 → 第 2–3 週 V-Flow 每週 1 次 → 第 3 週 Onda", "Onda 每 4 週，中間 V-Flow 淋巴療程每週 2 次 × 3 週。", "成個循環約 16–20 週。"],
+[4, 2, "Onda 後紅腫未退，客人想做 V-Flow，點安排？", "今日做另一個部位，紅腫退咗先做同一位", "今日做同一位但只用 CET NORMAL", "同一位要等紅腫退；另一部位可以。", "第 7 日跟進問紅腫退咗未。"],
+[4, 2, "Onda 後摸到硬粒，V-Flow 點安排？", "每週 2–3 次淋巴療程，至少 3 週", "等 4 週再 Onda 先處理", "DEKA：硬粒 → 每週 2–3 次至少 3 週引流。", "紀錄硬粒大小變化。"],
+[5, 2, "客人有金屬植入物喺膝蓋，想做大腿同膝蓋？", "大腿可以，膝蓋唔做", "兩樣都唔做", "只係植入物嗰個位唔做，其他部位可以；迴路板唔好貼近植入物。", "約客問清楚位置。"],
+[5, 2, "產後客人想做肚？", "要醫生評估先，哺乳期唔做", "6 個月後可以直接做", "產後係額外注意（醫生評估）；哺乳係絕對禁忌。", "唔處理腹直肌分離。"],
+[5, 2, "客人上月打咗面部 filler，想做 Face？", "打咗嘅位唔做，其他位可以（待醫生確認）", "全面唔做 6 個月", "近期填充／肉毒嘅位置暫時唔做；線雕未夠 3 個月亦唔做。", "問邊個位、幾耐前。"],
+[5, 2, "客人肚有未癒合傷口，想做肚？", "改做其他部位", "貼防水膠布照做肚", "開放性傷口係禁忌，唔做嗰個位。", "做背或肩頸代替。"],
+[5, 2, "客人有少少發燒但堅持要做？", "改期", "低強度做", "發燒係禁忌。", "禮貌解釋。"],
+[5, 2, "客人長期食止痛藥（非甾類抗炎藥）？", "唔做，交醫生", "可以，避開痛症位", "長期用非甾類抗炎藥或皮質類固醇係禁忌。", "問「長期定偶然」。"],
+[5, 2, "客人日日食低劑量阿司匹林預防心血管？", "唔做", "可以，唔係治療劑量", "阿司匹林或血液紊亂係禁忌，唔分劑量。", "交醫生。"],
+[5, 2, "客人有卵巢囊腫，想做背？", "肚唔做，其他部位要醫生評估", "背可以直接做", "卵巢囊腫係禁忌，保守做法係交醫生。", "唔好為收單改做背。"],
+[5, 2, "客人有高血壓但今日量正常？", "唔做", "可以，當日正常就得", "高血壓係禁忌，睇病史唔係當日讀數。", "交醫生。"],
+[5, 2, "客人哺乳緊想做肩頸？", "唔做", "肩頸可以，肚唔做", "哺乳係絕對禁忌，唔分部位。", "等停餵再約。"],
+[2, 3, "做肚 RET 60 B，螢幕 25 W，客人話 3 分。點做？", "PAUSE，檢查迴路板同頭，再由同一強度 RUN", "+5 升兩次，30 秒後再問", "RET B 正常約 100 W；25 W 係接觸問題，升強度等接觸好返會突然過熱。", "重貼迴路板、確認銀頭喺 RET 手棒。"],
+[2, 3, "做肚 RET 60 B，螢幕 110 W，客人話 4 分。點做？", "+5，等 30 秒再問", "檢查迴路板，可能貼得唔實", "110 W 係 RET B 正常範圍，接觸正常，客人只係未熱夠，正常逐級升。", "到 6–7 就紀錄。"],
+[2, 3, "做肚 CET 60 DEEP，螢幕 120 W，客人話一開機就好熱。原因？", "插咗銀色 RET 頭入 CET 模式", "強度開得太高", "CET 60 正常 50–60 W；120 W 加即刻熱係用錯頭。強度太高唔會令 W 數離譜。", "PAUSE，換黑頭。"],
+[2, 3, "範圍 50–70，去到 70 客人仍話 5 分，迴路板同 cream 都正常。點做？", "維持 70，繼續做，紀錄「上限未到目標」", "升到 75，因為只超一格", "唔超範圍上限係硬規矩；有啲客人熱得慢，紀錄低下次由較高開始。", "唔好為咗追分數破規。"],
+[2, 3, "客人 50 開始，3 分 → 55 → 4 分 → 60 → 6 分。下一步？", "保持 60，紀錄", "再 +5 到 65 確保 7 分", "6 分已經係目標範圍，保持。再升可能去到 8。", "下次由 50 開始。"],
+[2, 3, "客人話 8 分，你 −10 後佢話 7 分。跟住？", "保持，紀錄 8 分時嘅強度", "再 −10 保險", "7 分喺目標範圍內，唔使再降。", "紀錄「X 時 8 分，X−10 時 7 分」。"],
+[2, 3, "客人話 8 分，你 −10，補 cream，30 秒後佢仍話 8 分。點做？", "再 −10，檢查電極有冇停喺一點", "保持，等熱力散", "仍然 8 分代表仲有能量集中：再降同檢查手勢。", "唔好叫客人忍。"],
+[2, 3, "熟客上次到目標強度 60（已存入記憶位 C1）。今日佢話好攰、怯熱。由幾多開始？", "50", "60", "客人狀態唔同感覺唔同，由紀錄數 −10 開始。", "問「今日想暖啲定溫和啲？」"],
+[2, 3, "瘦客做膝蓋附近。頭同強度？", "RET 30，範圍最低再 −10，移動快", "RET 60，範圍最低，正常速度", "近骨位阻抗高熱得集中，要細頭、更低強度、快移動。", "迴路板貼大腿。"],
+[2, 3, "客人 BMI 32 做肚但話驚熱。模式同強度？", "RET 80 C，由範圍最低 −10 開始", "RET 60 B，由範圍最低開始", "模式按脂肪揀（C），強度按客人揀（−10 起步）。", "C 模式每 30 秒問。"],
+[2, 3, "客人 BMI 24、肚脂肪一般但好硬。第二步？", "RET 60 B 或鬆筋刀", "RET 80 C", "C 係厚脂肪用；硬肚用鬆筋刀效果好。", "硬 ≠ 厚。"],
+[2, 3, "客人做緊 RET，話治療位 5 分、迴路板位刺。點做？", "PAUSE，重貼迴路板喺肌肉多嘅位", "+5 令治療位快啲到 7 分", "迴路板刺係電流集中喺迴路板，升強度只會更刺。", "重貼按實再 RUN。"],
+[2, 3, "做肩頸鬆筋刀，客人皮膚開始紅但話得 5 分。點做？", "減力、補 cream，強度維持", "+5，因為熱度未夠", "紅係力度／cream 問題，唔係熱度問題；兩樣分開處理。", "目標係鬆唔係紅。"],
+[2, 3, "客人做鬆筋刀話「同刮痧一樣痛」但熱度 6 分。原因？", "力度太大或 cream 唔夠", "強度太高", "熱度正常但痛，係機械摩擦問題。", "cream 1.5–2 倍，減力。"],
+[2, 3, "做 Bipolar 面，一粒頭特別熱。點做？", "調整手勢令 6 粒頭貼平，補 cream", "−10，因為面部薄", "一粒熱係嗰粒頭獨自承受電流，係接觸問題。", "輪廓位要跟住轉。"],
+[2, 3, "做 Bipolar 面，客人話「麻」。點做？", "PAUSE，檢查 6 粒頭貼平同 cream，再降強度", "正常現象，繼續", "Bipolar 唔應該有麻感。", "先接觸後強度。"],
+[2, 3, "做 Bipolar 面，客人話 7 分。點做？", "−5，面部目標 5–6", "保持，7 係目標", "面部目標 5–6；身體先係 6–7。", "每 30 秒問。"],
+[2, 3, "做小腿腳眼位客人話刺，其他位 5 分。點做？", "腳眼位降強度、移快，其他位照舊", "全段 −10", "近骨位個別處理，唔使成段降。", "CET 60 腳眼 1 分用低強度。"],
+[2, 3, "客人做緊 V-Flow 你要睇紀錄表 20 秒。點做？", "PAUSE 再停手", "電極繼續慢慢打圈", "停手前先 PAUSE；慢慢打圈都係停留太耐。", "養成口講「PAUSE」。"],
+[2, 3, "做完肚，皮膚均勻微紅加一粒粒紅點、一點刺痛。點判斷？", "局部過熱：影相、紀錄、報上司", "正常泛紅，提醒飲水", "均勻紅正常；紅點＋刺痛係過熱。", "下次由更低開始同檢查手勢。"],
+[2, 3, "客人話做完「成個人好攰」，冇紅腫刺痛。點做？", "正常循環反應，提醒飲水休息，紀錄", "判斷為過熱，下次 −20", "冇紅腫刺痛就唔係過熱，係循環反應。", "下次由低少少開始。"],
+[2, 3, "客人話上次做完當晚焗桑拿，有啲紅。點做？", "提醒術後注意，紀錄，今次照做", "今次唔做，等一星期", "紅已退，今次可以做，但要講清楚術後注意。", "每次做完講。"],
+[2, 3, "做肚客人戴住手錶同腳鏈，話「唔係做手腳」。點做？", "全部除咗先", "只除腳鏈（近迴路板）", "電流經成個身體走，所有金屬都要除。", "開始前流程第 2 步。"],
+[2, 3, "客人用緊發熱墊躺喺枱上。點做？", "關掉先做", "可以，因為幫助熱身", "原廠注意：關掉發熱墊，會影響熱度判斷。", "冬天留意。"],
+[2, 3, "客人做緊 CET，你要換去 RET 頭。次序？", "PAUSE → 拎起 → 換銀頭入 RET 手棒 → 揀 RET 模式 → 貼返 → RUN", "拎起 → 換頭 → 揀模式 → 貼返 → RUN", "離開皮膚前 PAUSE 係第一步。", "頭同手棒同模式三樣要對。"],
+[2, 3, "做背時客人要轉身做肚。迴路板？", "PAUSE，撕開重貼腰背／臀", "唔使動，迴路板喺腰背已經啱做肚", "做背時迴路板貼肚或大腿；轉做肚就要貼腰背／臀。", "換位前 PAUSE。"],
+[2, 3, "客人要連續做肚、背、肩頸三個部位。點計時間同次數？", "30 分鐘，扣 3 次，每部位重新 set 10 分", "30 分鐘，扣 2 次（背肩頸合計 1）", "肚、背、肩頸各 1 個部位。按 STOP 後時間返回 10 分。", "連續 1 小時要散熱。"],
+[2, 3, "客人要做全面包眼周加頸胸口。扣幾多次、幾耐？", "2 次，20 分鐘", "1 次，15 分鐘", "全面包眼周 1、頸＋胸口 1。", "避開乳暈。"],
+[2, 3, "客人要做兩邊大腿加肚。扣幾多次？", "3 次", "2 次", "一邊大腿 1，肚 1。", "30 分鐘，留意散熱。"],
+[2, 3, "客人要做一對手臂加肩頸。扣幾多次？", "2 次", "3 次", "一對手臂算 1，肩頸 1。", "手臂療程原廠 15 分。"],
+[1, 3, "客人想做面部「緊緻」，你揀咗 CET 30 疏通流程。錯喺？", "緊緻係 Bipolar 15 分；CET 30 係修面型", "冇錯，兩樣一樣", "兩個流程目標唔同。", "問客人要輪廓定緊緻。"],
+[1, 3, "客人想處理肩頸「繃緊」，你揀 RET 60 B。錯喺？", "痛症／繃緊係 RET A；B 係減脂", "冇錯，B 都可以", "肩頸用 A 模式（40–60 W），B 係 100 W 太強。", "肩頸見到 100 W 就係揀錯。"],
+[1, 3, "Onda 後淋巴療程你揀 CET 60 DEEP。錯喺？", "淋巴係 CET 60 NORMAL → RET 60 B", "冇錯", "淋巴係 NORMAL；DEEP 係減脂橙皮痛症。", "Onda 後引流唔係減脂。"],
+[1, 3, "客人做橙皮紋你揀 RET 60 A。錯喺？", "橙皮係 RET 60 B 10 分", "冇錯，A 溫和啲", "橙皮：DEEP → B。A 係痛症。", "每週 2 次。"],
+[1, 3, "客人做頸紋你用鬆筋刀。錯喺？", "頸前唔做鬆筋刀／RET，頸用 Bipolar 由下向上", "冇錯，用 3 號", "頸前係鬆筋刀禁區。", "Bipolar 頸強度比面低。"],
+[1, 3, "做眼周你用 CET 30 直接喺眼皮上面輕推。錯喺？", "眼皮唔做，只做眼眶骨外圍", "冇錯，CET 30 可以做眼", "眼皮唔做，骨外圍低強度。", "隱形眼鏡除咗。"],
+[1, 3, "做手臂你直接開始鬆筋刀 15 分鐘。錯喺？", "漏咗 CET 60 背 3 分鐘熱身", "冇錯", "所有身體療程先 CET 60 膀胱經熱身。", "2 號鬆筋刀。"],
+[1, 3, "做小腿你用 CET 60 由小腿肚開始。錯喺？", "先做腹股溝、膝內側、腳眼開通道", "冇錯", "三個淋巴位先開通道再推。", "腳眼低強度。"],
+[1, 3, "客人要做頭部你用 CET 60 做頭皮。錯喺？", "頭皮用 CET 20，CET 60 只做背", "冇錯", "頭：CET 60 背 → CET 30／40 頸 → CET 20 頭皮。", "細頭低強度快移。"],
+[1, 3, "做胸部你 Bipolar 直接由乳暈向上推。錯喺？", "避開乳暈，先 CET 60 開腋下副乳底線", "冇錯", "胸部避開乳暈。", "植入物唔做。"],
+[1, 3, "客人做肚第一步你用 RET 60 B。錯喺？", "第一步係 CET 60 DEEP 5 分熱身", "冇錯", "先 CET 軟脂肪熱身，再 RET 深層。", "次序唔好掉轉。"],
+[1, 3, "客人 BMI 35 你用 RET 60 B。錯喺？", "BMI>30 用 RET 80 C", "冇錯", "厚實脂肪用大頭加 C。", "100–140 W 密問熱度。"],
+[3, 3, "客人做緊肚，原廠參數表寫 RET 60 B 75–90，療程表寫 40–60。你由幾多開始？", "40（較低範圍最低）", "75（參數表最低）", "兩份文件唔一致，前線原則係由較低範圍最低開始。", "唔超上限。"],
+[3, 3, "新客瘦，做肚 CET 60 DEEP，療程表 50–70。由幾多開始？", "40", "50", "新客瘦客由範圍最低再 −10。", "+5 逐級。"],
+[3, 3, "熟客做肚 CET 60 DEEP，上次紀錄 60。今日由幾多開始？", "50", "60", "熟客由紀錄數 −10 開始，更快到位又安全。", "存入 C1。"],
+[3, 3, "客人要做「減脂」同「橙皮」，你只有 10 分鐘一個部位。RET 點做？", "按部位做 10 分，紀錄用咗 B 模式", "減脂 5 分 B 加橙皮 5 分 A", "兩樣都係 RET 60 B，10 分一個部位。", "原廠時間係參考。"],
+[4, 3, "Onda 肚第 3 日，紅腫未退，客人想做 V-Flow。點安排？", "今日做背／肩頸，紅腫退咗先做肚", "今日做肚淋巴療程但用 CET NORMAL 低強度", "同一位要等紅腫退；另一部位可以。", "第 7 日跟進。"],
+[4, 3, "Onda 肚第 10 日，紅腫已退，客人問可唔可以再 Onda。點答？", "唔得，至少 15 日、建議 4 週，今日做 V-Flow 淋巴療程", "得，紅腫退咗就可以", "DEKA 同一位置至少 15 日。", "中間 V-Flow 每週 2 次。"],
+[4, 3, "Onda 當日客人想同一格加 V-Flow「排走脂肪」。點做？", "唔做同一格，做另一部位，Onda 後只手動引流 5 分鐘", "可以，但用 CET NORMAL 低強度", "同日同格疊做暫時唔做。", "做法 A。"],
+[4, 3, "試行版 B：V-Flow 暖身後皮溫未回落，客人趕時間。點做？", "唔開 Onda，等皮溫正常", "開 Onda 但降 kJ", "預熱皮膚早到 41°C，做唔足 kJ 仲有燒傷風險。", "用等待時間影相量尺寸。"],
+[4, 3, "試行版 B：Onda 做緊皮溫到 41°C，kJ 仲差 30。點做？", "降功率、延長時間，做足 kJ", "停機，當做完", "Onda 效果由 kJ 決定。", "紀錄提早停。"],
+[4, 3, "試行版 B：V-Flow 暖身客人話 6 分。點做？", "−10，暖身目標只係 4–5", "保持，6 係 V-Flow 目標", "試行版暖身目標 4–5，唔係平時嘅 6–7。", "低強度 RET 為主。"],
+[4, 3, "同事話「Onda 做完即刻 V-Flow 同一格效果好啲」，已經做咗幾個客。點做？", "紀錄、報上司，之後跟做法 A", "冇問題，繼續", "同日同格疊做要等 BeautiSky／醫生確認。", "唔好當小事。"],
+[4, 3, "客人 Onda 後摸到硬粒，仲未做 V-Flow。點安排？", "每週 2–3 次淋巴療程至少 3 週", "等 4 週再 Onda 先睇", "DEKA：硬粒 → 每週 2–3 次至少 3 週。", "紀錄硬粒變化。"],
+[4, 3, "客人 Per-V 第 3 日想做 Bipolar 面。點做？", "等至少 1 週", "可以，避開下巴位", "Per-V 後至少 1 週（待醫生確認）。", "約一週後。"],
+[4, 3, "客人 Per-V 一週後想做頸同胸口 Bipolar。點做？", "可以，算 1 個部位，避開乳暈", "唔可以，Per-V 位附近", "頸＋胸口 1 個部位；Per-V 後一週可做。", "先 CET 60 再 Bipolar。"],
+[4, 3, "同日做兩部機：Onda 肚、V-Flow 背。邊個先？", "邊個先都得，唔同部位", "一定先 V-Flow 背再 Onda 肚", "做法 A 唔同部位次序無所謂。", "通常先 V-Flow 俾客人放鬆。"],
+[4, 3, "排期：肚 2 格循環計劃（Onda 每 4 週 × 5），V-Flow 10 次點用？", "Onda 之間每 2 週 1 次", "Onda 當日同格 1 次 ＋ 翌週 1 次", "循環計劃設計係 Onda 之間每 2 週 1 次。", "淋巴療程版係每週 2 次 × 3 週。"],
+[5, 3, "客人糖尿病但話「控制得好好」。點做？", "唔做，原廠禁忌", "可以，用低強度同密問熱度", "糖尿病係禁忌，唔分控制好唔好；感覺遲鈍令安全機制失效。", "交醫生。"],
+[5, 3, "客人高血壓冇食藥、話「好輕微」。點做？", "唔做", "可以，避開肩頸", "高血壓係禁忌，唔分輕重。", "唔好自己放寬。"],
+[5, 3, "客人哺乳緊，只想做肩頸。點做？", "唔做", "可以，離胸部遠", "哺乳係絕對禁忌，電流經全身。", "等停餵。"],
+[5, 3, "客人唇瘡發作緊想做面。點做？", "唔做，改期", "避開嘴唇做眼周", "皰疹係禁忌。", "好返先做。"],
+[5, 3, "客人化療中想做 V-Flow 紓緩。點做？", "唔做", "低強度 CET 做背", "癌症、電療化療係禁忌。", "建議問醫生。"],
+[5, 3, "客人癲癇病史，10 年冇發作。點做？", "唔做", "可以，避開頭頸", "癲癇係禁忌，唔分幾耐冇發。", "交醫生。"],
+[5, 3, "客人肝病，想做肩頸。點做？", "唔做", "可以，唔做肚", "肝病係禁忌，唔分部位。", "約客問長期病。"],
+[5, 3, "客人卵巢囊腫想做背。點做？", "肚唔做，其他部位交醫生評估", "背可以直接做", "卵巢囊腫係禁忌，保守處理。", "唔好為收單改部位。"],
+[5, 3, "客人膝蓋有鋼釘想做大腿。點做？", "大腿可以，膝蓋唔做，迴路板唔貼近鋼釘", "大腿同膝蓋都唔做", "只係植入物位唔做。", "迴路板貼大腿上段遠離鋼釘。"],
+[5, 3, "客人有胸部植入物想做胸。點做？", "唔做胸", "可以，避開植入物位置", "治療位有植入物唔做。", "其他部位可以。"],
+[5, 3, "客人上月打咗眼周 filler 想做眼周。點做？", "眼周唔做，其他位可以（待醫生確認）", "可以，低強度", "近期填充位暫時唔做。", "問邊個位幾耐前。"],
+[5, 3, "客人線雕 2 個月想做面。點做？", "唔做面，等夠 3 個月", "可以，避開線位", "線雕未夠 3 個月唔做（待醫生確認）。", "紀錄日期。"],
+[5, 3, "客人有少少燒但話「只係攰」。點做？", "改期", "低強度做", "發燒係禁忌。", "禮貌解釋。"],
+[5, 3, "客人肚有未癒合傷口想做肚。點做？", "改做其他部位", "貼膠布避開做", "開放傷口係禁忌。", "做背代替。"],
+[5, 3, "客人長期食止痛藥。點做？", "唔做，交醫生", "可以，避開痛位", "長期非甾類抗炎藥係禁忌。", "問長期定偶然。"],
+[5, 3, "客人食緊低劑量阿司匹林。點做？", "唔做", "可以，唔係治療劑量", "阿司匹林係禁忌，唔分劑量。", "交醫生。"],
+[5, 3, "客人有嚴重濾泡性痤瘡想做面。點做？", "唔做面，其他部位可考慮", "可以，避開暗瘡位", "嚴重濾泡性痤瘡係禁忌。", "等皮膚穩定。"],
+[5, 3, "客人有異常出血疾病。點做？", "唔做", "可以，避開傷口", "異常出血係禁忌。", "約客問。"],
+[5, 3, "客人感覺遲鈍（神經問題）但冇糖尿病。點做？", "交醫生先評估", "可以，用較低強度", "感覺遲鈍用唔到熱度機制。", "唔好自己判斷。"],
+[5, 3, "電極頭有劃痕，今日 booking 滿。點做？", "唔用嗰個頭，報上司，用其他頭或改期", "塗多啲 cream 照用", "劃痕可能有火花傷皮膚。", "每日開機前檢查。"],
+[5, 3, "迴路板有摺痕但仲貼得到。點做？", "換新或者攤平貼實，確保冇摺", "照用，摺位加 cream", "摺位會令電流集中。", "客人話迴路板熱就係呢個。"],
+[5, 3, "客人問「機器有時唔熱有時好熱」。最可能原因？", "迴路板貼得唔穩或者 cream 唔夠", "機器老化", "接觸唔穩定令輸出忽高忽低。", "檢查 W 數。"],
+[0, 3, "客人做 RET 話「有少少麻」。原因同處理？", "接觸唔好令電流集中：PAUSE，檢查迴路板同 cream", "射頻本身會刺激神經，正常", "幾百 kHz 唔會電親人，麻係接觸問題。", "由低強度再開始。"],
+[0, 3, "做面見到螢幕 100 W。判斷？", "用錯咗頭或模式，面部應該約 40 W", "正常，面部要高功率", "面 CET 20 NORMAL 約 40 W。", "PAUSE 檢查。"],
+[0, 3, "客人問「V-Flow 同 Lift Pro 都係射頻點解感覺唔同」。原因？", "頻率差幾十倍：V-Flow 幾百 kHz 深而散，Lift Pro 幾十 MHz 淺而集中", "Lift Pro 功率高好多", "低頻深而散，高頻淺而集中。", "角色唔同，唔好互相比較。"],
+[2, 3, "客人問可唔可以自己揀強度。點答？", "唔可以，但你報熱度分數我即刻調", "可以，由 10 開始你話幾多就幾多", "強度由治療師按分數調，客人負責報分。", "解釋 0–10 分制。"],
+[2, 3, "客人話「上次治療師冇問過熱度」。點做？", "紀錄、報上司，補返培訓", "冇問題，熟客唔使問", "每 30–60 秒問熱度係 SOP。", "考核清單項目。"],
+[2, 3, "客人要求「做耐啲，15 分鐘」。點做？", "跟公司定嘅 10 分鐘，想做耐啲就扣多一次", "可以，原廠都係 15 分", "公司定 1 次 = 10 分；未拍板前唔自己加時。", "連續用 1 小時要散熱。"],
+[2, 3, "做完肚後相，客人仲有 cream 喺身。點做？", "抹走 cream 先影", "即刻影，等陣抹", "cream 反光，後相要同前相條件一致。", "同一角度同一燈光。"],
+[2, 3, "客人做緊肚話 6 分，但你見皮膚某一片特別紅。點做？", "PAUSE，檢查電極有冇停留，補 cream，移快", "保持，6 分係目標", "熱度正常但局部紅係手勢問題。", "避免局部過熱。"],
+[3, 3, "客人想一次做肚 15 分鐘原廠療程（CET 5 + RET 10）。扣幾多次、計時點 set？", "扣 1 次，按 STOP 後 set 返 15 分", "扣 2 次，10 分 + 5 分", "公司定 1 次 = 1 部位，暫時 10 分；如果跟原廠 15 分仍係 1 次（待拍板）。", "跟公司通知。"],
+[3, 3, "客人每週 2 次做肚橙皮，10 次套裝幾耐用晒？", "約 5 週", "約 10 週", "每週 2 次，10 次 = 5 週。", "4–6 次一組，做完比較前相。"],
+[3, 3, "客人每週 1 次做面，10 次套裝 6 個月有效，用唔用得晒？", "用得晒，10 週", "用唔晒", "每週 1 次 10 週，6 個月夠用。", "提醒唔好斷。"],
+[3, 3, "客人 3 個月先用咗 10 次套裝嘅 2 次，仲有 3 個月。點做？", "提醒每星期返嚟，幫佢定時間", "唔理，有效期係客人責任", "未用完係流失亦係客人損失。", "WhatsApp 幫佢定每週一次。"],
+[2, 1, "C1／C2／C3 點樣儲存？", "揀位 → 調強度 → SAVE", "調強度 → 長按數字 → 自動儲存", "原廠做法：揀記憶位，調到想要嘅強度，按 SAVE。", "熟客到位嘅數存低，下次由低少少開始。"],
+[2, 1, "問熱度嘅標準問法？", "「0 分係冷、10 分係熱到受唔住，而家幾多分？」", "「1 分係暖、5 分係熱到受唔住，而家幾多分？」", "分制係 0–10，0 冷 10 受唔住。", "開始前先解釋一次分制。"],
+[2, 1, "熱度 0–3 分代表？", "冷／微暖，要升強度", "暖、舒服，Onda 前暖身停喺度", "0–3 冷微暖；4–5 暖舒服；6–7 好暖唔刺；8+ 即降。", "+5 等 30 秒再問。"],
+[2, 1, "做肚時客人應該除咗邊啲嘢？", "所有金屬飾物，包括手錶、戒指", "只係肚臍環同腰鏈", "電流經全身，所有金屬都除。", "確認冇金屬植入物。"],
+[3, 1, "原廠肩頸紓緩 RET 60／鬆筋刀嘅強度？", "30–40", "50–60", "肩頸 30–40；背部疏通 RET 先係 50–60。", "避開頸中央。"],
+[3, 1, "原廠背部疏通 CET 60 嘅強度？", "50–80", "40–60", "背部 CET 60 膀胱經 50–80；大腿／手臂／小腿鬆筋刀先係 40–60。", "由 50 開始。"],
+[3, 1, "原廠大腿療程 RET／鬆筋刀嘅時間？", "13 分", "10 分", "大腿：CET 1＋1 分，RET／鬆筋刀 13 分，共 15。", "減脂 RET，鬆筋用鬆筋刀。"],
+[1, 1, "CET 40 用喺邊？", "手臂、膝蓋", "面、頸", "CET 40 做手臂膝蓋；CET 30 面頸。", "中等面積中等頭。"],
+[5, 1, "以下邊個係原廠禁忌？", "結締組織疾病", "關節炎（輕度）", "糖尿病、癲癇、結締組織疾病係禁忌。", "約客問長期病。"],
+[2, 2, "客人熱度由 3 分升到 6 分，正常大約要幾耐？", "1–2 分鐘（每 30 秒 +5）", "即時，一下升 +15", "逐級 +5 每 30 秒問，通常 1–2 分鐘到位。", "唔好一下升太多。"],
+[2, 2, "客人第一次做背，範圍 50–80。由幾多開始？", "40", "50", "新客由範圍最低再 −10。", "瘦客近骨位同樣。"],
+[2, 2, "熟客做肩頸鬆筋刀，上次 35 到位。今日由幾多開始？", "25（或 30，範圍最低）", "35", "熟客由紀錄數 −10，但唔低過合理起步。", "肩頸範圍 30–40。"],
+[2, 2, "客人做 Bipolar 面，由幾多開始？", "60（範圍最低）；怯熱客 50", "70", "Bipolar 60–70，由 60 開始，新客怯熱 −10。", "面部目標 5–6 分。"],
+[2, 2, "做鬆筋刀背部，由幾多開始？", "40", "50", "鬆筋刀 40–60，由 40 開始。", "1 號刀。"],
+[2, 2, "做手掌鬆筋刀，由幾多開始？", "20", "30", "手掌手指 20–30，由 20 開始。", "每 30 秒問。"],
+[2, 2, "肚做完 CET 60 DEEP 5 分，轉 RET 60 B，強度由幾多開始？", "由 RET 範圍最低（療程表 40）重新開始", "沿用 CET 嗰陣到位嘅數", "換模式換頭要重新由低開始，RET 輸出大好多。", "PAUSE 換頭。"],
+[2, 2, "由 CET 60 換去 CET 20 做眼周，強度點處理？", "降 10–20 再問熱度", "沿用，因為同係 CET", "細頭能量集中，換細頭要先降。", "眼周 30–50。"],
+[2, 2, "由 RET 30 換去 RET 60，強度點處理？", "可以由稍高開始，再問熱度", "一定要降 10", "大頭熱得散，可以稍高；但都要問熱度。", "仍然唔超上限。"],
+[2, 2, "做肚時客人話「迴路板冇感覺，治療位 7 分」。判斷？", "正常，迴路板唔應該有熱感", "迴路板貼得唔實", "迴路板正常係冇感覺嘅；有熱先係問題。", "繼續做。"],
+[2, 2, "治療中客人要轉身。點做？", "PAUSE → 拎起電極 → 轉身 → 檢查迴路板 → RUN", "繼續輸出，快手轉身", "任何離開皮膚都先 PAUSE；轉身後迴路板可能移位。", "換部位要重貼。"],
+[2, 2, "做緊 RET 要補 cream。點做？", "PAUSE → 拎起 → 補 → 貼返 → RUN", "唔使 PAUSE，直接喺皮膚上加", "離開皮膚前 PAUSE。", "見到澀就補。"],
+[2, 2, "做完一個部位要影後相同量尺寸，次序？", "抹 cream → 影相 → 量尺寸 → 紀錄", "影相 → 抹 cream → 量尺寸", "cream 反光，先抹。", "同一角度燈光。"],
+[2, 2, "客人中途話要去洗手間。點做？", "PAUSE → 拎起 → 撕迴路板 → 返嚟重貼 → 由較低強度再開始", "PAUSE 就得，返嚟直接 RUN", "離開枱要撕迴路板，返嚟重貼，皮膚涼咗要由低少少開始。", "重新問熱度。"],
+[2, 2, "同一次 booking 做完肚再做面 Bipolar。迴路板？", "撕走，Bipolar 唔使", "留住，一齊用", "Bipolar 唔使迴路板。", "換 BIPOLAR 端口同模式。"],
+[2, 2, "做面前客人要除咩？", "耳環、頸鏈、隱形眼鏡（做眼周）", "只係耳環", "所有金屬飾物；做眼周要除隱形眼鏡。", "問近期眼科手術。"],
+[2, 2, "Bipolar 面部推法三條線？", "下巴→耳、嘴角→太陽穴、頸由下向上", "額頭→太陽穴、鼻翼→耳、頸由上向下", "由下向上、由中間向外。", "6 粒頭貼平。"],
+[2, 2, "客人做緊鬆筋刀話「唔熱但好痛」。判斷？", "力度太大／cream 唔夠，同熱度無關", "強度太低，要升", "痛係機械問題，唔好用升強度解決。", "減力補 cream。"],
+[2, 2, "客人做緊鬆筋刀話「好熱但唔痛」。判斷？", "降強度，力度維持", "減力", "熱係強度問題，痛係力度問題，分開處理。", "8 分即 −10。"],
+[2, 2, "做臀部療程客人話坐骨位置「麻痹」。點做？", "停，建議先睇醫生", "避開麻痹點繼續", "麻痹係神經症狀，唔係繃緊。", "對外唔講治療痛症。"],
+[1, 2, "做膝蓋用邊個頭？", "RET 30（或 CET 40）", "RET 60", "細位用細頭：RET 30／CET 40。", "迴路板貼大腿。"],
+[1, 2, "做肚厚脂肪用 CET 邊個尺寸熱身？", "CET 80", "CET 60", "厚脂肪肚、大腿用 CET 80；一般肚 CET 60。", "熱身都係 DEEP。"],
+[1, 2, "做頸部（頭部療程中段）用邊個頭？", "CET 30／40", "CET 60", "頭部療程：背 CET 60 → 頸 CET 30／40 → 頭皮 CET 20。", "頸用較低強度。"],
+[1, 2, "鬆筋刀 2 號做邊幾個部位？", "小腿、手臂", "背、大腿", "2 號小腿手臂。", "腋下位低強度。"],
+[1, 2, "Bipolar 可以做邊啲部位？", "面、頸、眼周、胸口", "面、肚、大腿", "Bipolar 只熱表層，做面頸眼周胸口。", "肚大腿用 CET／RET。"],
+[3, 2, "原廠眼部療程第一步？", "CET 30 眼肚由眼頭拉至耳頂分 3 行 5 分", "CET 20 眉骨底按摩 5 分", "眼部先 CET 30 眼肚 3 行 5 分，再按目標揀第二步 10 分。", "30–50 由最低開始。"],
+[3, 2, "原廠面部疏通第一段？", "CET 30 雙下巴→耳珠→鎖骨 3 分", "CET 30 額頭分三行 2 分", "次序：雙下巴鎖骨 3 → 額頭 2 → 全面提拉 8 → 腮位 2。", "40–50。"],
+[3, 2, "原廠腹部療程硬實脂肪嘅替代做法？", "鬆筋刀沿恥骨、腹部向下推 10 分", "RET 80 C 向下推 10 分", "硬實脂肪可用鬆筋刀代替 RET 頭；C 係厚脂肪。", "仍然先 CET 60 DEEP 5 分。"],
+[3, 2, "原廠背部疏通成個流程？", "CET 60 膀胱經 5 分（50–80）→ RET 60 由下至上 10 分（50–60）", "CET 60 膀胱經 5 分（40–60）→ 鬆筋刀 3 號 10 分（30–40）", "背部用 RET 60 由下至上；鬆筋刀 3 號同 30–40 係肩頸。", "避開脊椎正上面。"],
+[4, 2, "Onda 後淋巴療程嘅 CET 時間同 RET 時間？", "CET 5 分 → RET 15 分（原廠）", "CET 5 分 → RET 10 分", "淋巴 RET 60 B 15 分；橙皮痛症 RET 10 分。我哋一次 10 分一部位。", "原廠時間係參考。"],
+[4, 2, "Onda 做完同一格手動引流幾耐？", "5 分鐘", "10 分鐘", "Onda 當日手做 5 分鐘淋巴引流，唔開機。", "做成 Onda SOP。"],
+[5, 2, "客人話有「少少血壓高」但從未食藥。點做？", "唔做，交醫生", "可以，當日量正常就做", "高血壓係禁忌，唔分有冇食藥。", "唔自己放寬。"],
+[5, 2, "客人有偏頭痛病史。點做？", "可以做，但問清楚有冇神經性疾病診斷", "唔做，當神經性疾病", "偏頭痛唔喺禁忌清單，但腦部／神經性疾病係，要問清楚診斷。", "有疑問交醫生。"],
+[5, 2, "客人有輕度暗瘡想做面。點做？", "可以，避開發炎位，嚴重濾泡性痤瘡先唔做", "唔做面", "只有嚴重濾泡性痤瘡係禁忌。", "發炎位唔做。"],
+[5, 2, "客人舊手術疤痕已癒合，想做嗰個位。點做？", "可以，先確認冇金屬植入物", "唔做，當開放傷口", "已癒合疤痕唔係禁忌，但要問植入物。", "紀錄。"],
+[2, 3, "做肚 CET 60 DEEP 由 50 開始，客人 30 秒後話 5 分、1 分鐘後話 7 分、1.5 分鐘話 8 分，你未加過強度。原因？", "熱力積聚，電極可能行得慢；−10 並移快", "客人報分唔準", "冇加強度但分數一路升，係積熱同手勢問題。", "紀錄。"],
+[2, 3, "客人做肚 RET 60 B，前 5 分鐘 6 分，第 7 分鐘突然話 8 分，W 數不變。原因？", "電極停留或行得慢", "迴路板鬆咗", "W 不變代表接觸正常，係手勢。", "移快、補 cream、−10。"],
+[2, 3, "客人做肚 RET 60 B，W 由 100 突然跌到 30，客人話唔熱。原因？", "迴路板鬆咗或 cream 乾", "強度被誤按降低", "W 突跌係接觸中斷。", "PAUSE 重貼補 cream。"],
+[2, 3, "客人做鬆筋刀背，W 顯示 100，客人話 4 分但皮膚紅。點做？", "減力補 cream，強度維持或 +5", "−10 因為皮膚紅", "紅係摩擦，W 同熱度正常。", "分開處理。"],
+[2, 3, "客人做緊肚，你發現迴路板貼咗喺髖骨位。點做？", "PAUSE，移去腰背肌肉位重貼", "冇問題，客人冇話熱", "骨位電流集中，遲早會熱。", "預防好過補救。"],
+[2, 3, "兩個治療師對同一客人紀錄：A 寫 RET 60 B 到位 55；B 寫 CET 60 DEEP 到位 55。下次做肚邊個數用邊步？", "CET 第一步由 45 開始，RET 第二步由 45 開始", "兩步都由 55 開始", "兩個模式分開紀錄分開起步，各自 −10。", "唔好混用。"],
+[2, 3, "客人做緊面 Bipolar 6 分，你想做眼周。點做？", "PAUSE，眼周改 CET 20／30，強度降，只做骨外圍", "Bipolar 直接推去眼周，強度 −5", "眼周用 CET 20／30 唔用 Bipolar 6 粒頭，骨外圍低強度。", "除隱形眼鏡。"],
+[2, 3, "客人做肩頸鬆筋刀，話頸中央有少少刺。點做？", "停頸中央，只做肩膀同頸側", "降強度繼續頸中央", "頸中央係禁區。", "3 號刀。"],
+[2, 2, "客人做緊 CET 60 DEEP 肚，5 分鐘到，要轉 RET。完整次序？", "PAUSE → 拎起 → 換銀頭入 RET 手棒 → 揀 RET B → 時間 set 10 分 → 貼返 → RUN", "拎起 → 換銀頭 → 揀 RET B → 貼返 → RUN（時間自動延續）", "按 STOP 時間會返 10 分，換模式要重新 set 時間；離開皮膚先 PAUSE。", "頭、手棒、模式、時間四樣對齊。"],
+[3, 2, "原廠「坐骨／臀部」療程成個流程？", "CET 60 膀胱經 5 分（50–80）→ 鬆筋刀盆骨關節 5 分 → 臀部外側 5 分（40–60）", "CET 60 臀部 5 分 → RET 80 C 盆骨 10 分", "臀部用鬆筋刀唔用 RET 80 C。", "坐骨麻痹先睇醫生。"]
+  ]},
+  sales: { name:"銷售話術", cats:["定位與分別","價目與套裝","開場與話術","異議處理","合規講法","Onda 配合銷售"], q: [
+[0, 1, "V-Flow 嘅副題係？", "促進循環・紓緩水腫", "深層熱療・緊緻塑形", "副題係「促進循環・紓緩水腫」，講嘅係循環同舒服，唔係塑形。", "對客第一句就係呢八個字。"],
+[0, 1, "V-Flow 三條產品線嘅名？", "Body 淋巴熱療、Release 鬆筋熱療、Face 輪廓熱療", "Body 溶脂熱療、Release 痛症熱療、Face 緊緻熱療", "三條線嘅名刻意避開溶脂、痛症、緊緻呢啲字。", "用對名，客人先唔會期望錯。"],
+[0, 1, "V-Flow 同 Onda 嘅角色分別？", "Onda 主力溶脂每 3–4 週；V-Flow 循環保養每週", "Onda 主力緊緻每 2 週；V-Flow 溶脂每週", "Onda 溶脂／橙皮／緊緻每 3–4 週；V-Flow 循環熱身紓緩保養每週 1–2 次。", "兩樣配合，唔係二選一。"],
+[0, 1, "V-Flow 嘅感覺定位？", "暖、似熱石按摩", "熱、要忍少少", "暖似熱石按摩係 V-Flow；熱要忍少少係 Onda。", "對客講對比。"],
+[0, 1, "V-Flow 嘅客群？", "硬肚水腫、OL 肩頸背繃緊、Onda 客中間保養", "想減大量脂肪、產後塑形、想拉提", "客群係循環同保養需要，唔係減脂拉提。", "三個入門角度。"],
+[0, 1, "30 秒介紹入面嘅數字？", "300 Watt、每秒震動 47 萬次、每部位 10 分鐘", "300 Watt、每秒震動 4.7 萬次、每部位 15 分鐘", "470 kHz = 47 萬次；一部位 10 分鐘。", "背熟。"],
+[0, 1, "頭 3–6 個月對舊客講法？", "「V-Flow，前稱 V-Burn」", "「V-Burn，新名 V-Flow」", "一律以 V-Flow 為主，舊名作補充。", "之後連補充都唔使。"],
+[0, 1, "舊客問「我啲 V-Burn 次數點算」？", "次數不變，三個部位都用得", "次數不變，但只可用返原本部位", "三條線共用次數。", "講清楚佢賺咗。"],
+[1, 1, "V-Flow 試做價？", "$680", "$880", "$680；$880 係 Onda 試做 1 格。", "唔好撈亂。"],
+[1, 1, "V-Flow 單次正價？", "$1,080", "$1,088", "單次正價 $1,080；價目表原價欄寫 $1,088 係要執嘅錯。", "贈品價值一律 $1,080。"],
+[1, 1, "10 次套裝價錢？", "$5,900", "$6,600", "10 次 $5,900（$590）；$6,600 係 Salus Talent A 10 次原價。", "6 個月有效。"],
+[1, 1, "30 次套裝價錢？", "$15,600", "$15,800", "30 次 $15,600，每次 $520，12 個月。", "可同一位家人共用。"],
+[1, 1, "50 次套裝價錢同有效期？", "$24,800，18 個月", "$24,800，12 個月", "50 次 $24,800、$496／次、18 個月。", "100 次 30 個月、200 次 48 個月。"],
+[1, 1, "10 次套裝有效期？", "6 個月", "12 個月", "10 次 6 個月；30 次先係 12 個月。", "每 2 週至少 1 次先用得晒。"],
+[1, 1, "贈品價值應該寫？", "V-Flow 單次 $1,080", "V-Flow 單次 $1,880", "統一 $1,080，$1,880 唔再出現。", "見到就報 marketing。"],
+[1, 1, "試做後即日買套裝，試做費？", "全數扣減", "扣一半", "即日轉套裝 $680 全數扣。", "隔日唔扣。"],
+[1, 1, "雙機體驗價？", "$1,280", "$1,560", "Onda 1 格 + V-Flow 另一部位同日 $1,280（分開 $1,960）。", "即 Onda 試做加 $400。"],
+[1, 1, "循環計劃價錢？", "$16,800", "$16,600", "Onda 10 格 + V-Flow 10 次，分開 $18,700 → $16,800。", "慳 $1,900。"],
+[1, 1, "Onda 客加購 V-Flow 10 次？", "$5,300", "$5,500", "Onda 老客加購 $5,300，平 $600。", "每次 $530。"],
+[1, 1, "Onda 當日 V-Flow 單次加購？", "$590", "$680", "Onda 單次加購 $590（10 次價）。", "每次 Onda 都問。"],
+[1, 1, "V 面套裝價？", "$7,980", "$7,880", "Per-V + Bipolar 10 次，分開 $8,788 → $7,980。", "慳 $808。"],
+[1, 1, "Body Reset＋ 價？", "$32,800", "$33,800", "Body Reset 4 格 × 5 + V-Flow 30 次，分開 $35,400 → $32,800。", "慳 $2,600。"],
+[1, 1, "保養 Club＋ 價？", "$9,800", "$9,980", "保養 Club 4 格／年 $4,580 + V-Flow 10 次 $5,900 → $9,800。", "慳 $680。"],
+[1, 1, "肩頸＋背雙部位試做？", "$1,180", "$1,360", "20 分鐘 $1,180。", "單部位 $680。"],
+[1, 1, "全年放鬆卡嘅共用規則？", "可同一位家人／朋友共用", "可同最多兩位共用", "30 次 12 個月，可同一位共用。", "只限 30 次卡。"],
+[1, 1, "一次 V-Flow 嘅定義？", "1 個部位 10 分鐘", "1 個部位 15 分鐘", "公司定 1 次 = 1 部位 10 分鐘。", "15 分待拍板。"],
+[1, 1, "全面（包眼周）算幾多次？", "1 次", "2 次", "全面包眼周 1；面＋頸胸口 2。", "部位定義貼前台。"],
+[2, 1, "Body 線入門問題？", "「體重正常但肚硬、食完飯就脹？」", "「想減幾多磅？」", "入門角度係硬肚水腫，唔講減磅。", "問完先推。"],
+[2, 1, "Release 線開場白？", "「坐足一日，肩頸係咪硬到似石咁？」", "「肩頸痛咗幾耐？」", "講繃緊硬，唔講痛症。", "有痛症轉介醫生。"],
+[2, 1, "Face 線開場白？", "「影相時係咪覺得下巴線唔夠清、眼底暗？」", "「想唔想去眼袋黑眼圈？」", "講觀感，唔講去眼袋。", "Bipolar 係保養。"],
+[2, 1, "Onda × V-Flow 線開場白？", "「Onda 每 4 個星期先做得一次，中間 3 個星期好多客人想有啲嘢做」", "「Onda 配 V-Flow 效果會快好多」", "開場講空檔，唔講效果加倍。", "冇數據唔講。"],
+[2, 1, "熱手 demo 由強度幾多開始、升到幾分？", "20，升到 5–6 分", "30，升到 6–7 分", "Demo 由 20 開始，升到客人話 5–6。", "2 分鐘內。"],
+[2, 1, "Demo 收尾問題？", "「今日做完整 10 分鐘試下？」", "「今日買唔買 10 次？」", "先問試做，試做完先講套裝。", "即日轉套裝全扣。"],
+[2, 1, "Onda 客第 7 日 WhatsApp 內容？", "問感覺、講 3 週後再 Onda、中間 V-Flow、約日子", "問感覺、推循環計劃、送優惠碼", "範本係關心 → 空檔 → V-Flow → 約日子。", "每個 Onda 客必發。"],
+[2, 1, "Release 線收單句？", "「10 次 $5,900，每次 $590，平過外面一節好啲嘅按摩」", "「10 次 $5,900，比單次 $1,080 平一半」", "對比按摩，唔係對比自己單次價。", "再講共用卡。"],
+[2, 1, "Onda 線收單句？", "「分開買 $18,700，循環計劃 $16,800，V-Flow 10 次平咗一半」", "「分開買 $18,700，循環計劃 $16,800，九折」", "講 V-Flow 平一半，比講折扣有感覺。", "慳 $1,900。"],
+[3, 1, "客人：「咁貴，外面按摩都係幾百。」", "「10 次每次 $590。按摩由外面按，V-Flow 300 W 由入面熱，試 2 分鐘就感覺到」", "「外面按摩冇射頻，效果唔同，我哋貴係正常」", "用分別加體驗答，唔用「貴係正常」。", "即刻 demo。"],
+[3, 1, "客人：「冇時間。」", "「每次 10 分鐘，食晏都做得，我哋喺中環」", "「可以約放工後，我哋開到 9 點」", "標準答案係 10 分鐘食晏做得。", "即刻問幾點食晏。"],
+[3, 1, "客人：「同 Onda 有咩分別？」", "「Onda 主力減局部脂肪每 4 週；V-Flow 深層熱療保養每週；兩樣配合」", "「Onda 溶脂，V-Flow 排走溶咗嘅脂肪」", "唔講排走脂肪。", "Role play 情景 1。"],
+[3, 1, "客人：「做幾次先見效？」", "「好多客人第一次已覺得鬆咗；身形建議做完一個療程再同前相比較」", "「原廠建議 4–6 次，一般第 3 次見效」", "唔承諾次數見效。", "用前相。"],
+[3, 1, "客人：「我想試先。」", "「試做 $680；即日買 10 次，$680 全數扣返」", "「試做 $680；一星期內買套裝可以扣返」", "即日先扣。", "趁舒服講。"],
+[3, 1, "客人：「有冇副作用？」", "「可能輕微泛紅，短時間消退；有啲情況唔適合，做前會問清楚」", "「完全冇副作用，好安全」", "「完全冇」唔專業。", "FAQ 標準答案。"],
+[3, 1, "客人：「痛唔痛？」", "「唔痛，感覺係暖，似熱石按摩，會一路問你熱度」", "「有少少熱，忍一忍就得」", "忍一忍係 Onda 講法。", "V-Flow 賣舒服。"],
+[3, 1, "客人：「要做幾耐？」", "「每個部位 10 分鐘，做完即刻返工」", "「每個部位 15 分鐘，之後休息 10 分鐘」", "10 分鐘，冇 downtime。", "食晏做得。"],
+[3, 1, "客人：「一個部位有幾大？」", "「15×15 cm，差唔多同 Onda 一格一樣」", "「一隻手掌咁大，大約 10×10 cm」", "15×15 cm。", "用手比劃。"],
+[4, 1, "對外講肩頸應該用？", "「紓緩肌肉繃緊」", "「紓緩痛症」", "「治療／紓緩痛症」係醫療宣稱。", "痛症轉介醫生。"],
+[4, 1, "對外講眼周應該用？", "「眼周護理、緊緻、保養」", "「改善眼袋、淡化黑眼圈」", "去眼袋、消黑眼圈係禁句，「改善」「淡化」都係。", "Bipolar 係保養。"],
+[4, 1, "對外講肚應該用？", "「腹部深層熱療、促進循環、紓緩硬肚」", "「腹部深層熱療、減少內臟脂肪」", "減內臟脂肪冇證據。", "講體感。"],
+[4, 1, "可以引用嘅廠方數字？", "核心溫度升高 5–7°C、血液循環增加 4–5 倍（註明廠方資料）", "42–45°C 脂肪細胞凋亡", "42–45°C 冇出處要刪。", "加「廠方資料」。"],
+[4, 1, "可以講嘅 Onda 配合講法？", "「Onda 原廠 DEKA 專家小組建議 Onda 後做淋巴引流」", "「代理建議 Onda 後做 V-Flow 排走溶咗嘅脂肪」", "DEKA 建議引流有文獻；排走脂肪未有研究。", "Hoffmann 2024。"],
+[4, 1, "網頁 98%／−15% 數據要點標？", "「TopGlow 內部客戶紀錄，效果因人而異」", "「臨床研究數據」", "係內部紀錄唔係臨床。", "或者刪。"],
+[4, 1, "「產後腹直肌分離」應改做？", "「產後肚皮護理（需醫生評估）」", "「產後收腹塑形」", "腹直肌分離係醫療狀況；塑形亦係過度承諾。", "哺乳期唔做。"],
+[4, 1, "客人有痛症、麻痹，應該？", "建議先睇醫生，醫生話得先做紓緩繃緊", "可以做，但唔講治療", "痛症麻痹先轉介。", "贏信任。"],
+[5, 1, "循環計劃入面 V-Flow 嘅排期？", "Onda 之間每 2 週 1 次", "Onda 當日 1 次 + 中間 1 次", "10 次配 5 次 Onda，每 2 週 1 次。", "淋巴療程版每週 2 次 × 3 週。"],
+[5, 1, "同日兩部機嘅賣法？", "Onda 做肚，V-Flow 做另一部位", "Onda 做肚，V-Flow 同一格跟尾", "做法 A。", "同格暫時唔做。"],
+[1, 2, "分開買 Onda 10 格 + V-Flow 10 次係幾錢，套裝慳幾多？", "$18,700，慳 $1,900", "$18,700，慳 $1,700", "$18,700 − $16,800 = $1,900。", "講「V-Flow 10 次平一半」。"],
+[1, 2, "雙機體驗分開買幾錢，慳幾多？", "$1,960，慳 $680", "$1,960，慳 $400", "$880 + $1,080 = $1,960；−$1,280 = $680。", "「等於 V-Flow 嗰次免費」。"],
+[1, 2, "試做 $680 後即日買 10 次，實付？", "$5,220", "$5,900", "$5,900 − $680。", "今日嗰次免費。"],
+[1, 2, "Body Reset＋ 慳幾多？", "$2,600", "$2,800", "$35,400 − $32,800。", "全肚大又鬆客。"],
+[1, 2, "V 面套裝慳幾多？", "$808", "$880", "$8,788 − $7,980。", "「平 $800 幾」。"],
+[1, 2, "保養 Club＋ 慳幾多？", "$680", "$780", "$10,480 − $9,800。", "Onda 老客轉保養。"],
+[1, 2, "Onda 客加購 10 次比正價平幾多、每次？", "$600，每次 $530", "$600，每次 $590", "$5,900 − $5,300 = $600；$5,300 ÷ 10 = $530。", "第 7 日跟進推。"],
+[1, 2, "30 次比 10 次每次平幾多？", "$70", "$90", "$590 − $520。", "每週一次一年啱用。"],
+[1, 2, "客人買 30 次淨係做面＋頸，可以嚟幾多次？", "15 次", "30 次", "面＋頸扣 2。", "買前講清楚。"],
+[1, 2, "客人做兩邊大腿 + 肚，每次扣？", "3 次", "2 次", "一邊大腿 1、肚 1。", "推 30 次。"],
+[1, 2, "客人做一對手臂 + 肩頸 + 背，每次扣？", "3 次", "4 次", "一對手臂 1、肩頸 1、背 1。", "30 分鐘。"],
+[1, 2, "每週 1 次做肚一年，買邊個套裝啱？", "30 次（12 個月）", "50 次（18 個月）", "每週 1 次 = 52 次／年，30 次 12 個月每星期用剛好；50 次 18 個月都用唔晒。", "每次 $520。"],
+[1, 2, "兩人共用每人每週 1 次，30 次卡幾耐用晒？", "約 15 週", "約 30 週", "2 人 × 1 次 = 每週 2 次，30 ÷ 2 = 15 週。", "可以再補 10 次。"],
+[1, 2, "10 次 6 個月有效，最少要幾密先用得晒？", "每 2 週 1 次", "每週 1 次", "26 週 ÷ 10 ≈ 每 2.6 週 1 次。", "每週 1 次 10 週就用晒。"],
+[1, 2, "客人試做 $680 後第二日先返嚟買 10 次，實付？", "$5,900", "$5,220", "即日先扣。", "講清楚即日。"],
+[1, 2, "Onda 試做客加 $400 做 V-Flow，等於邊個 package？", "雙機體驗 $1,280", "Onda 單次加購 $590", "$880 + $400 = $1,280 雙機體驗。", "加購 $590 係俾已買 Onda 嘅客。"],
+[1, 2, "全年放鬆卡 30 次，共用嗰位可以中途換人嗎？", "唔可以，紀錄一位", "可以，每次嚟登記邊個", "規則係同一位家人／朋友。", "買前紀錄名。"],
+[1, 2, "5 格 × 2 嘅 Onda 配 V-Flow 10 次，V-Flow 排法？", "Onda 之間每 2 週 1 次，共 10 次", "Onda 後 3 週每週 1 次，共 15 次", "循環計劃設計係每 2 週 1 次。", "10 次啱啱用晒。"],
+[2, 2, "客人問「V-Flow 做咩？」第一句？", "「促進循環、紓緩水腫，10 分鐘深層熱療，做完暖同鬆」", "「470 kHz 射頻，300 Watt，由 K1MED 出」", "先講感受同副題，後講機器。", "再問最想改善邊度。"],
+[2, 2, "客人入嚟未知想做咩，先問邊三條？", "最想改善邊度／肚硬食完飯脹？／每日坐幾耐肩頸硬？", "想減幾多磅／預算幾多／之前做過咩機", "先問需要分流三條線，唔先問預算。", "再問有冇做緊 Onda。"],
+[2, 2, "客人話「我做緊 Onda」，應該推？", "①-4 Onda 客加購 10 次 $5,300", "循環計劃 $16,800", "已買 Onda 嘅客推加購，唔係再買循環計劃。", "或者當日加購 $590。"],
+[2, 2, "客人係 Onda 新客未買，應該推？", "循環計劃 $16,800 或雙機體驗 $1,280", "Onda 客加購 $5,300", "新客推套裝或體驗；加購係老客。", "分清。"],
+[2, 2, "客人肩頸硬但話「我同男朋友都係」，推？", "全年放鬆卡 30 次可共用", "兩張 10 次 $5,900", "共用卡一單變兩客。", "每次 $520。"],
+[2, 2, "Per-V 客人做緊 Per-V，幾時推 V 面套裝？", "做 Per-V 嗰日趁佢仲有感覺", "Per-V 一週後第一次 Bipolar 時", "最好時機係做 Per-V 當日。", "一週後先開始 Bipolar。"],
+[2, 2, "熱手 demo 嘅三個失敗原因？", "強度太高、冇貼迴路板、手冇放喺客人身上", "強度太低、cream 太多、時間太短", "Demo 失敗三原因。", "由 20 開始。"],
+[2, 2, "Demo 做完客人話「幾舒服」，下一句？", "「今日做完整 10 分鐘試下？試做 $680」", "「今日買 10 次 $5,900 即日扣 $680」", "先試做再套裝，唔好跳步。", "試做完趁舒服講套裝。"],
+[2, 2, "試做完客人仲喺枱上，講咩？", "「今日買 10 次，$680 全數扣返，即係今日免費」", "「我 WhatsApp 你套裝資料，你慢慢睇」", "即日先扣，走咗成交率跌。", "唔放走。"],
+[2, 2, "Onda 客第 7 日 WhatsApp 嘅結尾？", "「你想約邊日？」", "「有興趣可以搵我」", "結尾要約日子，唔係開放式。", "跟進約到為止。"],
+[2, 2, "Role play 情景 3「OL 走入嚟話肩頸好硬」嘅正確流程？", "問痛症麻痹 → 講射頻熱身加鬆筋刀 → 熱手 demo → 試做 $680", "講射頻熱身加鬆筋刀 → 熱手 demo → 試做 $680", "先篩痛症麻痹。", "有就轉介。"],
+[3, 2, "客人：「外面有 $300 一次射頻。」", "「原理同類；分別係 300 W 醫療級、一部機做身體肩頸面、配合 Onda／Per-V 做保養」", "「嗰啲係 Bipolar 膠原機，熱唔到深層，我哋係單極」", "對客唔好用技術貶低對手，講分別同配合。", "即刻 demo。"],
+[3, 2, "客人：「你哋以前叫 V-Burn 話溶脂，而家又話唔係，呃人？」", "「改名就係因為舊名令人誤會，V-Flow 真正做到嘅係循環熱療，溶脂係 Onda；你嘅次數唔受影響」", "「以前係溶脂機，而家升級咗做熱療機」", "誠實講改名原因，唔好話機器升級。", "講清次數不變。"],
+[3, 2, "客人：「INDIBA 係 448，你哋 470 係咪差啲？」", "「同一類技術，差 5%，體感一樣；INDIBA 係品牌，我哋平好多」", "「470 比 448 更深層，所以效果更好」", "唔爭數字，亦唔吹 470 好啲。", "Demo。"],
+[3, 2, "客人：「INDIBA 有好多研究，你哋有冇？」", "「同一類技術；我哋用廠方資料：核心溫度升 5–7°C、循環增加 4–5 倍」", "「INDIBA 嘅研究都適用，因為同係射頻」", "唔借 INDIBA 研究。", "只用 SINESTON 廠方資料。"],
+[3, 2, "客人：「做 V-Flow 會唔會瘦？」", "「促進循環紓緩水腫，有啲人覺得輕咗；減脂係 Onda」", "「會，配合飲食每週可以減少少」", "唔講減磅。", "引導去 Onda + V-Flow。"],
+[3, 2, "客人：「幾時見到個肚細咗？」", "「每個人唔同，建議做完一個療程同前相比較；好多客人即時覺得鬆咗」", "「一般 3–4 次開始見到尺寸變化」", "唔講次數見效。", "前相同尺寸。"],
+[3, 2, "客人：「我個肚脹係咪水腫？」", "「我唔診斷，但 V-Flow 做到紓緩硬肚水腫感，可以試 10 分鐘」", "「係，肚硬食完飯脹就係水腫」", "避免診斷。", "入門角度硬肚水腫。"],
+[3, 2, "客人：「可唔可以日日做？」", "「原廠建議每週 1–2 次，身體要時間反應」", "「可以，V-Flow 好溫和」", "日日做冇額外好處，亦浪費次數。", "定每星期時間。"],
+[3, 2, "客人：「同 Lift Pro 邊個好？」", "「唔同嘢：Lift Pro 集中真皮緊緻拉提；V-Flow 深層熱療保養」", "「V-Flow 深層啲，所以全面啲」", "唔互相貶低。", "按目標推。"],
+[3, 2, "客人：「V-Flow 係咪治療師用手按？」", "「治療師一手拎電極一手放你身上，熱經手傳出，似熱手按摩，但熱係射頻產生」", "「係，係加咗射頻嘅人手按摩」", "熱源係射頻。", "即刻試。"],
+[3, 2, "客人：「Bipolar 嘅紅光係咩？」", "「表層加熱嘅指示燈」", "「紅光有助膠原增生」", "唔加功能。", "簡單答。"],
+[3, 2, "客人：「做完可唔可以做 gym？」", "「當日避免激烈運動、熱水浴、桑拿；飲多啲水」", "「可以，做完運動效果更好」", "術後注意。", "每次講。"],
+[4, 2, "客人：「V-Flow 幫我排走溶咗嘅脂肪？」", "「代理係咁講但我未見研究，我唔亂講；可以肯定嘅係促進循環，原廠專家小組建議 Onda 後做引流」", "「係，淋巴療程就係排走 Onda 溶咗嘅脂肪」", "未有書面研究唔講。", "誠實係話術。"],
+[4, 2, "客人：「V-Flow 令 Onda 效果快一倍？」", "「冇數據支持；原廠專家小組建議 Onda 後做淋巴引流，我哋用 V-Flow 做」", "「代理話係，所以我哋建議配合」", "快一倍係禁句，「代理話」都唔可以。", "只講 DEKA 引流。"],
+[4, 2, "客人：「先做 V-Flow 再即刻 Onda 同一格效果好啲？」", "「未有指引，我唔做；今日 Onda 做肚，V-Flow 做另一部位」", "「可以，暖身咗 Onda 熱得快啲」", "同日同格唔做亦唔宣傳。", "做法 A。"],
+[4, 2, "客人：「我有肩周炎，V-Flow 醫唔醫到？」", "「V-Flow 唔係治療痛症，建議先睇醫生；醫生話得先做紓緩繃緊」", "「唔係醫，但可以紓緩肩周炎嘅痛」", "「紓緩肩周炎痛」都係醫療宣稱。", "轉介。"],
+[4, 2, "客人：「可唔可以去眼袋？」", "「眼周護理、緊緻，好多客人覺得眼底冇咁重；唔講去眼袋」", "「唔係去，但可以減淡眼袋」", "減淡都係承諾。", "保養講法。"],
+[4, 2, "客人：「產後腹直肌分離得唔得？」", "「要醫生評估，哺乳期唔做；我哋唔處理腹直肌分離」", "「可以做肚，幫助收返」", "醫療狀況。", "轉介。"],
+[4, 2, "客人：「內臟脂肪減幾多 %？」", "「冇醫療檢查數據，唔講數字；做到嘅係腹部深層熱療紓緩硬肚」", "「內部客戶紀錄平均 −15%」", "內部紀錄對客唔講數字。", "講體感。"],
+[4, 2, "客人：「用咩溫度溶脂？」", "「V-Flow 唔係溶脂機，升溫係促進循環（廠方：核心溫度升 5–7°C）；溶脂係 Onda」", "「大約 42–45°C 令脂肪細胞凋亡」", "42–45°C 冇出處。", "分清兩部機。"],
+[4, 2, "見到贈品寫「V-Flow 單次 $1,880」？", "報 marketing 改 $1,080", "照用，因為係舊 deck", "統一 $1,080。", "所有渠道。"],
+[4, 2, "見到網頁寫 448 kHz？", "報 marketing 改 470", "照用，差唔多", "統一 470。", "客人見到兩個數會問。"],
+[5, 2, "Onda 客人做完第一次 Onda，幾時推 V-Flow？", "第 7 日 WhatsApp 跟進時", "Onda 當日即刻推循環計劃", "第 7 日範本。", "約佢返嚟。"],
+[5, 2, "Onda 客人話「做完 Onda 之後我仲要做啲咩？」", "「原廠專家小組建議 Onda 後做淋巴引流，我哋用 V-Flow 做，每星期返嚟」→ 推 ①-4", "「等 4 星期再 Onda，中間唔使做」", "Role play 情景 2。", "加購 $5,300。"],
+[5, 2, "Onda 做咗 2 次話冇效果想停，點做？", "攞前相同尺寸比較，再講循環計劃填空檔", "建議加大 Onda 劑量", "用紀錄講效果。", "冇前相今次即影。"],
+[5, 2, "Onda 客每次嚟最易成交嘅 upsell？", "Onda 單次加購 V-Flow 另一部位 $590", "V 面套裝 $7,980", "每次 Onda 都問一句「加 $590 做埋肩頸？」", "另一部位。"],
+[1, 3, "客人想做肚 + 兩邊大腿，每週 1 次，想買一年。推邊個？", "50 次（18 個月，每次 3 部位 = 約 17 次嚟）或 30 次 + 補", "30 次（12 個月）", "30 次 ÷ 3 = 10 次嚟 = 10 週，用唔到一年；50 次 ÷ 3 ≈ 17 次嚟。", "計俾客人睇。"],
+[1, 3, "客人同媽媽想共用，兩人每週 1 次面，30 次卡幾耐用晒？", "約 15 週", "約 30 週", "每週 2 次，30 ÷ 2 = 15 週。", "可考慮 50 次（但共用規則只寫 30 次卡）。"],
+[1, 3, "客人試做 $680 後想買 8 次療程而唔係 10 次，試做費點計？", "即日全數扣（價目表寫 8 次都扣）", "只有 10 次先扣", "價目表寫「即日轉 8 次療程：$680 全數扣減」。", "即日。"],
+[1, 3, "Onda 試做客（已付 $880）想加 V-Flow，收幾多？", "$400（雙機體驗 $1,280）", "$590（單次加購）", "加購 $590 係已買套裝嘅 Onda 客；試做客係雙機體驗加 $400。", "分清兩個客群。"],
+[1, 3, "Onda 老客（已買 10 格）當日想加 V-Flow 另一部位，收幾多？", "$590", "$400", "已買 Onda 嘅客加購 $590。", "或推 ①-4 10 次 $5,300。"],
+[1, 3, "客人買咗循環計劃，10 次 V-Flow 用完但 Onda 仲有 2 格，想補 V-Flow，推？", "Onda 客加購 10 次 $5,300", "10 次 $5,900", "已係 Onda 客，用加購價。", "每次 $530。"],
+[1, 3, "客人問「單次 $1,080 同 10 次 $590 點解差咁遠」？", "「套裝係俾每星期返嚟嘅客，先有效果；單次係偶然體驗」", "「單次定價係包含咨詢同評估」", "引導去套裝，唔編理由。", "試做即日轉套裝。"],
+[1, 3, "客人買咗 10 次做肚，第 5 次想改做肩頸，點處理？", "同一批次數，直接扣 1 次", "要另開肩頸套裝", "三條線共用次數。", "靈活係賣點。"],
+[1, 3, "客人 10 次用咗 2 次，3 個月過去，點處理？", "WhatsApp 提醒仲有 8 次、到期日，幫佢定每週時間", "等到期前 2 週先提醒", "未用完係流失。", "定時間。"],
+[1, 3, "客人問「200 次 $76,000 值唔值？」", "「每次 $380 但要 4 年用晒，除非幾個人共用」", "「值，每次最平」", "誠實建議，唔推唔啱嘅套裝。", "按需要推。"],
+[2, 3, "客人試做完話「幾舒服，但我考慮下」。點做？", "「今日買 10 次 $680 全數扣，即係今日免費；聽日就冇得扣」", "「好，我 WhatsApp 你資料，今個星期內買都可以扣」", "即日先扣，唔好自己延長。", "唔放走。"],
+[2, 3, "客人試做完話「我想問下老公先」。點做？", "「可以即場打俾佢？即日買先扣得 $680」", "「好，你問完 WhatsApp 我，我幫你留住優惠」", "留住優惠唔係規則。", "即日。"],
+[2, 3, "客人 demo 做咗 2 分鐘話「冇乜感覺」。點做？", "檢查迴路板同手有冇放喺客人身上，再慢慢升到 5–6 分", "直接升到 60 令佢感覺到", "Demo 失敗三原因。", "由 20 升。"],
+[2, 3, "OL 客入嚟話肩頸硬，你即刻 demo。錯喺？", "未問痛症麻痹同禁忌", "冇錯，demo 最有效", "先篩查再 demo。", "起搏器、懷孕、高血壓、痛症麻痹。"],
+[2, 3, "顧問未試過 V-Flow 就去 sell。點做？", "先親身試做 10 分鐘再對客", "睇片同背話術就得", "顧問培訓要求親身試做。", "話術先有溫度。"],
+[2, 3, "客人問「V-Flow 做邊度？」你答「肚、肩頸、面」。仲漏咗咩？", "「一部機三種用法」嘅框架同三條線名", "「每部位 10 分鐘」", "用三條線名講，客人記得住。", "Body／Release／Face。"],
+[2, 3, "客人話「我都係想瘦肚」。V-Flow 應該點定位？", "Onda 做主力，V-Flow 做中間保養 → 推循環計劃", "V-Flow 做主力，配合 Onda 加強", "想減脂主力係 Onda。", "唔好用 V-Flow 頂 Onda。"],
+[2, 3, "客人話「我唔想做 Onda，太熱」。V-Flow 可唔可以單獨賣？", "可以，定位循環保養，唔承諾減脂", "可以，講 V-Flow 都可以慢慢溶脂", "單獨賣 V-Flow 要講清唔係溶脂。", "三個入門角度。"],
+[2, 3, "客人 Per-V 當日你推 V 面套裝，佢問「幾時開始 Bipolar？」", "「一個星期後，我幫你約定」", "「下星期或者今日都得」", "Per-V 後至少 1 週。", "即場約。"],
+[2, 3, "Onda 客第 7 日你 WhatsApp，佢回「紅腫未退」。下一句？", "「等退咗先做肚；今個星期可以先做肩頸 V-Flow，約邊日？」", "「等退咗再 WhatsApp 我」", "同日另一部位可以做。", "唔放開放式。"],
+[3, 3, "客人：「外面按摩都係幾百，你哋 $590 都係差唔多。」", "「所以價錢差唔多但技術唔同：按摩由外面按，V-Flow 300 W 由入面熱，試 2 分鐘就知」", "「我哋係醫療級，貴少少係應該」", "價錢差唔多就講技術分別同體驗。", "Demo。"],
+[3, 3, "客人：「我做過 INDIBA，感覺差唔多，點解要轉？」", "「同一類技術，體感差唔多係正常；分別係我哋配合 Onda／Per-V 做保養同價錢」", "「我哋 470 kHz 比 448 深層」", "唔用頻率爭。", "講配合同價錢。"],
+[3, 3, "客人：「代理話 V-Flow 排走脂肪，你話唔係，邊個啱？」", "「代理係咁講但未有書面研究，我哋只講有證據嘅：促進循環、DEKA 建議引流」", "「代理係專家，佢哋講嘅可以信」", "未有研究唔講。", "誠實。"],
+[3, 3, "客人：「做咗 5 次 V-Flow 肚冇細。」", "「V-Flow 係循環保養唔係減脂；減脂係 Onda，我哋睇返前相同尺寸」", "「再做多 5 次先有變化」", "唔承諾次數。", "分清角色。"],
+[3, 3, "客人：「我有肩頸痛，做 V-Flow 得唔得？」你答「得，紓緩肌肉繃緊」。錯喺？", "客人講「痛」，應先建議睇醫生", "冇錯", "痛症先轉介。", "繃緊先做。"],
+[3, 3, "客人：「我高血壓食緊藥，可唔可以做？」", "「原廠列明高血壓唔適合，我哋唔做；可以睇下其他療程」", "「食緊藥控制住就可以，我哋用低強度」", "高血壓係禁忌。", "唔放寬。"],
+[3, 3, "客人：「我哺乳緊，只做肩頸得唔得？」", "「哺乳期原廠列明唔適合，等停餵再約」", "「肩頸離胸遠，可以」", "絕對禁忌。", "禮貌。"],
+[3, 3, "客人：「我有糖尿病但控制得好。」", "「原廠列明糖尿病唔適合，我哋唔會做」", "「控制得好可以，我哋密啲問熱度」", "感覺遲鈍令安全機制失效。", "轉介。"],
+[4, 3, "同事對客講「V-Flow 幫你燃燒內臟脂肪」。點做？", "即場唔反駁，事後提醒同事改口徑，報上司", "冇問題，網頁都咁寫", "網頁都要刪。", "統一口徑。"],
+[4, 3, "Reels 文案想寫「做完 Onda 效果快一倍」。點改？", "「Onda 原廠 DEKA 專家小組建議 Onda 後做淋巴引流」", "「代理建議 Onda 後配合 V-Flow，效果更佳」", "「效果更佳」都係承諾。", "出處 Hoffmann 2024。"],
+[4, 3, "文案想寫「470 kHz 深層溶脂」。點改？", "「470 kHz 射頻深層熱療，促進循環、紓緩水腫」", "「470 kHz 射頻深層減脂」", "溶脂減脂都唔講。", "副題。"],
+[4, 3, "文案想寫「治療肩頸痛症」。點改？", "「紓緩肩頸肌肉繃緊」", "「改善肩頸痛症」", "改善都係醫療宣稱。", "痛症轉介。"],
+[4, 3, "文案想寫「去眼袋黑眼圈」。點改？", "「眼周護理、緊緻保養」", "「淡化眼袋黑眼圈」", "淡化都係承諾。", "Bipolar 保養。"],
+[4, 3, "文案想用「血液循環 ×4–5 倍」。點處理？", "可用，註明「廠方資料」", "唔可用，冇臨床研究", "有廠方 brochure 支持。", "加註。"],
+[4, 3, "文案想用「內臟脂肪 −15%」。點處理？", "標明「TopGlow 內部客戶紀錄，效果因人而異」或刪除", "可用，因為係真實客戶數據", "內部紀錄唔係臨床。", "對客口頭唔講。"],
+[4, 3, "文案想寫「產後腹直肌分離修復」。點處理？", "刪，改「產後肚皮護理（需醫生評估）」", "改「產後腹直肌分離護理」", "醫療狀況唔處理。", "哺乳唔做。"],
+[5, 3, "Onda 客人話「我想同日做 V-Flow 加強」。點答？", "「同日可以，但做另一個部位；同一格要等紅腫退咗先做淋巴療程」", "「同日可以，V-Flow 做同一格低強度」", "同格唔做。", "加購 $590。"],
+[5, 3, "Onda 客人話「我想快啲再 Onda，唔想等 4 週」。點答？", "「原廠至少相隔 15 日，我哋建議 4 週；中間 V-Flow 每週返嚟」", "「可以 2 週，因為你紅腫退得快」", "DEKA 15 日，我哋 4 週。", "V-Flow 填空檔。"],
+[5, 3, "Onda 客人摸到硬粒好驚。點答？", "「專家小組建議每週 2–3 次淋巴引流至少 3 週，大部分會散，我哋用 V-Flow 做」", "「硬粒代表脂肪溶緊，係好事」", "唔好用「好事」帶過。", "約每週 2–3 次。"],
+[5, 3, "Onda 客人問「先做 V-Flow 暖身再 Onda 係咪好啲？」", "「唔建議，預熱令皮膚早到上限，可能做唔足劑量；我哋做另一部位」", "「係，我哋有試行版可以咁做」", "試行版唔對客宣傳。", "做法 A。"],
+[5, 3, "循環計劃客人 Onda 第 2 次後話「想暫停」。點做？", "攞前相同尺寸比較，提醒 V-Flow 次數每 2 週用，唔好斷", "建議退款餘下 Onda 轉 V-Flow", "用紀錄講效果，保持到店。", "第 7 日跟進。"],
+[5, 3, "客人買咗 Onda 試做 $880，做完想加 V-Flow 做肚同一格。點答？", "「同一格今日唔做，加 $400 做肩頸或背」", "「加 $400 做肚低強度」", "同格唔做。", "雙機體驗。"],
+[2, 3, "客人問「你哋 V-Flow 同出面 $300 膠原機係咪一樣？」你答「一樣原理，我哋貴係因為醫療級」。改善？", "加「一部機做身體肩頸面、配合 Onda／Per-V 保養」，然後 demo", "加「我哋係單極 CET／RET，深層好多」", "對客唔講技術貶低，講分別同配合。", "體驗。"],
+[2, 3, "Role play 情景 1「V-Flow 同 Onda 分別，我應該做邊個？」完整答法？", "講角色分別（溶脂 vs 保養）、頻率（4 週 vs 每週）、感覺（熱忍 vs 暖）→ 問佢目標 → 推配合", "講角色分別 → 推循環計劃", "要問目標先推。", "三個對比。"],
+[1, 3, "客人買咗 30 次做面（每次扣 2），做咗 10 次嚟，仲剩幾多次？", "10 次（5 次嚟）", "20 次", "10 次嚟 × 2 = 20 次，30 − 20 = 10。", "提早講清楚。"],
+[1, 3, "客人 Onda 10 格 + 加購 V-Flow 10 次，總共付幾多？", "$12,800 + $5,300 = $18,100", "$12,800 + $5,900 = $18,700", "Onda 10 格 $12,800（分開買 $18,700 − V-Flow $5,900）；加購 $5,300。", "循環計劃 $16,800 更平，買前推套裝。"],
+[1, 3, "客人問「循環計劃 $16,800 定係 Onda 10 格 + 加購 10 次 $18,100 好？」", "循環計劃，平 $1,300", "加購，因為可以遲啲先買", "一次過買套裝平。", "講慳幾錢。"]
+  ]}
+};
+let track = "ops";
+let CATS = BANKS.ops.cats, Q = BANKS.ops.q;
+
+const $ = id => document.getElementById(id);
+const LVL={1:"初級",2:"中級",3:"高級"};
+let selectedCats = new Set(), level = 1;
+let deck = [], idx = 0, correct = 0, points = 0, misses = [], n = 10, answered = false;
+
+let count=25;
+const LVLHINT={1:"電極、模式、參數、禁忌配對，干擾項係鄰近嘅真實數值。",2:"流程次序、起步強度、換頭換模式、迴路板位置。",3:"現場情境：W 數異常、熱度變化、紅點刺痛、禁忌邊界。",0:"三級隨機抽，分數按題目級別計。"};
+const LVLHINT_S={1:"定位、價目、產品線名、基本講法。",2:"計數、分流、開場收單、合規字眼。",3:"真實情境：客人異議、合規陷阱、唔同客群收幾錢。",0:"三級隨機抽，分數按題目級別計。"};
+function poolSize(){ return Q.filter((q,i)=>(selectedCats.size===0||selectedCats.has(q[0])) && (level===0||q[1]===level)).length; }
+function summarize(){
+  const n=Math.min(count,poolSize()); const lv=level?LVL[level]:"混合";
+  $("sum-track").textContent=BANKS[track].name; $("sum-level").textContent=lv+" · "+n+" 題"+(n<count?"（呢個範圍得 "+n+" 題）":"");
+  const pts = level? n*level : Math.round(n*2); $("sum-pts").textContent=pts; $("sum-min").textContent=Math.max(2,Math.round(n*0.25));
+  $("lvlhint").textContent=(track==="sales"?LVLHINT_S:LVLHINT)[level];
+  $("advsum").textContent = selectedCats.size? [...selectedCats].map(i=>CATS[i]).join("、") : "全部";
+}
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{ count=+b.dataset.n; document.querySelectorAll(".mode").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); summarize(); });
+$("go").onclick=()=>start(count);
+function buildCats(){
+  selectedCats=new Set(); $("cats").innerHTML="";
+  CATS.forEach((c,i)=>{
+    const b=document.createElement("button"); b.className="chip"; b.type="button"; b.textContent=c+" · "+Q.filter(q=>q[0]===i).length;
+    b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{ if(selectedCats.has(i)) selectedCats.delete(i); else selectedCats.add(i); b.setAttribute("aria-pressed",String(selectedCats.has(i))); summarize(); };
+    $("cats").appendChild(b);
+  });
+}
+$("cnt-ops").textContent=BANKS.ops.q.length+" 題"; $("cnt-sales").textContent=BANKS.sales.q.length+" 題";
+document.querySelectorAll(".trk").forEach(b=>b.onclick=()=>{ track=b.dataset.t; CATS=BANKS[track].cats; Q=BANKS[track].q; document.querySelectorAll(".trk").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); buildCats(); summarize(); });
+buildCats(); summarize();
+document.querySelectorAll(".lvl").forEach(b=>b.onclick=()=>{ level=+b.dataset.l; document.querySelectorAll(".lvl").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); summarize(); });
+
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function start(count){
+  let pool = Q.map((q,i)=>i).filter(i=>(selectedCats.size===0||selectedCats.has(Q[i][0])) && (level===0||Q[i][1]===level));
+  if(!pool.length){ pool = Q.map((q,i)=>i).filter(i=>level===0||Q[i][1]===level); }
+  deck = shuffle(pool).slice(0,count); n = deck.length; idx=0; correct=0; points=0; misses=[];
+  $("start").hidden=true; $("done").hidden=true; $("quiz").hidden=false; document.body.classList.add("playing"); render(); window.scrollTo({top:0});
+}
+function render(){
+  answered=false; const q=Q[deck[idx]];
+  if(idx>0){ try{ $("quiz").scrollIntoView({block:"start",behavior:"smooth"}); }catch(e){} }
+  $("count").textContent=(idx+1)+" / "+n; $("barfill").style.width=(idx/n*100)+"%";
+  $("qcat").innerHTML=""; $("qcat").append(CATS[q[0]]); const bd=document.createElement("span"); bd.className="badge"; bd.textContent=BANKS[track].name+" · "+LVL[q[1]]+" · "+q[1]+" 分"; $("qcat").appendChild(bd);
+  $("prompt").textContent=q[2];
+  const opts=$("opts"); opts.innerHTML=""; $("explain").hidden=true; $("next").hidden=true;
+  const pair=shuffle([{t:q[3],ok:true},{t:q[4],ok:false}]);
+  pair.forEach((o,i)=>{ const b=document.createElement("button"); b.className="opt"; b.type="button";
+    b.innerHTML='<span class="k">'+(i?"B":"A")+'</span><span></span>'; b.lastChild.textContent=o.t;
+    b.onclick=()=>answer(b,o.ok,q); opts.appendChild(b); });
+}
+function answer(btn,ok,q){
+  if(answered) return; answered=true;
+  document.querySelectorAll(".opt").forEach(b=>{b.disabled=true; if(b.lastChild.textContent===q[3]) b.classList.add("right");});
+  if(!ok) btn.classList.add("wrong");
+  if(ok){ correct++; points+=q[1]; } else misses.push(q);
+  const e=$("explain"); e.className="explain "+(ok?"ok":"bad"); e.innerHTML='<b></b><span></span><div class="deep"><span class="deep-k"></span><span></span></div>';
+  e.firstChild.textContent=ok?"啱！+"+q[1]+" 分":"唔啱。正確係："+q[3]; e.children[1].textContent=q[5];
+  e.children[2].firstChild.textContent=ok?"實際點做":"錯咗會點、實際點做"; e.children[2].lastChild.textContent=q[6]; e.hidden=false;
+  $("next").hidden=false; $("next").textContent= idx+1<n ? "下一題" : "睇成績"; $("next").focus();
+}
+$("next").onclick=()=>{ idx++; if(idx<n) render(); else finish(); };
+$("quit").onclick=()=>{ $("quiz").hidden=true; $("start").hidden=false; document.body.classList.remove("playing"); };
+$("again").onclick=()=>{ $("done").hidden=true; $("start").hidden=false; document.body.classList.remove("playing"); window.scrollTo({top:0}); };
+
+function finish(){
+  $("quiz").hidden=true; $("done").hidden=false;
+  $("score").textContent=correct; $("total").textContent=n;
+  const pct=correct/n;
+  requestAnimationFrame(()=>{ $("ringfill").style.strokeDashoffset=String(477.5*(1-pct)); });
+  $("verdict").textContent = (pct===1?"全對！可以去教人。":pct>=.8?"合格（8/10 線以上）。":pct>=.6?"差少少，錯嗰幾題再睇一次。":"再溫多次手冊先，尤其係你錯嗰啲。")+" 呢局 +"+points+" 分。";
+  const m=$("miss"); m.innerHTML="";
+  if(misses.length){ const h=document.createElement("h3"); h.textContent="你錯咗呢 "+misses.length+" 題："; m.appendChild(h);
+    const ul=document.createElement("ul"); misses.forEach(q=>{const li=document.createElement("li"); li.innerHTML="<b></b> → <span></span><div class=\"deep\"></div>"; li.firstChild.textContent=q[2]; li.children[1].textContent=q[3]; li.lastChild.textContent=q[6]; ul.appendChild(li);}); m.appendChild(ul); }
+  saveScore(correct,n,points);
+}
+
+/* ---------- leaderboard via Google Sheet (Apps Script web app) ---------- */
+const SHEET_API = window.VFLOW_SHEET_API || ""; // 喺 config.js 設定
+let myName = "";
+try{ myName = localStorage.getItem("vflow_name") || ""; }catch(e){}
+function boot(){
+  if(myName) $("who").textContent="你係 "+myName;
+  if(!SHEET_API){ $("board").innerHTML='<p class="empty">未設定 Google Sheet API，排行榜未開。</p>'; return; }
+  loadBoard();
+}
+async function loadBoard(){
+  try{
+    const r=await fetch(SHEET_API+"?action=board&_="+Date.now(),{cache:"no-store"});
+    const data=await r.json(); renderBoard(data.rows||[]);
+  }catch(e){ $("board").innerHTML='<p class="empty">排行榜暫時載入唔到，稍後再試。</p>'; }
+}
+async function saveScore(c,total,pts){
+  const msg=$("savemsg");
+  if(!SHEET_API){ msg.textContent="未設定排行榜，呢局唔會上榜。"; return; }
+  if(!myName){ msg.textContent="未入名，呢局唔會上榜。"; return; }
+  const pct=Math.round(c/total*1000)/10;
+  const payload={name:myName, track, level, count:total, correct:c, points:pts, pct, ts:new Date().toISOString()};
+  try{
+    const r=await fetch(SHEET_API,{method:"POST",body:JSON.stringify(payload)}); // text/plain body → 唔會觸發 CORS preflight
+    const data=await r.json();
+    if(data.ok){ msg.textContent="已上榜：累積 "+data.totalPoints+" 分（第 "+data.plays+" 局）。"; renderBoard(data.rows||[]); }
+    else msg.textContent="上榜失敗："+(data.error||"未知錯誤");
+  }catch(e){ msg.textContent="上榜失敗，網絡問題或者 API 未設定。"; }
+}
+function renderBoard(rows){
+  if(!rows.length){ $("board").innerHTML='<p class="empty">未有人上榜。玩一局就會出現喺度。</p>'; return; }
+  rows.sort((a,b)=>(b.totalPoints-a.totalPoints)||(b.totalCorrect/(b.totalAnswered||1)-a.totalCorrect/(a.totalAnswered||1))||(b.plays-a.plays));
+  const t=document.createElement("table");
+  t.innerHTML='<thead><tr><th class="rank">#</th><th>同事</th><th class="n">累積分</th><th class="n">操作</th><th class="n">話術</th><th class="n">答對率</th><th class="n">局數</th></tr></thead><tbody></tbody>';
+  const tb=t.querySelector("tbody");
+  rows.slice(0,30).forEach((r,i)=>{ const tr=document.createElement("tr"); if(r.name===myName) tr.className="me";
+    const acc = r.totalAnswered ? Math.round(r.totalCorrect/r.totalAnswered*100)+"%" : "—";
+    tr.innerHTML='<td class="rank"></td><td></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td>';
+    tr.children[0].textContent=i+1; tr.children[1].textContent=r.name+(r.name===myName?"（你）":""); tr.children[2].textContent=r.totalPoints;
+    tr.children[3].textContent=r.pointsOps||0; tr.children[4].textContent=r.pointsSales||0;
+    tr.children[5].textContent=acc; tr.children[6].textContent=r.plays||0; tb.appendChild(tr); });
+  $("board").innerHTML=""; $("board").appendChild(t);
+}
+const GATE_HASH="c17b7277d19492550239a3316f2d22ab33d4251ff34bec51343aaf2e3c6b766a";
+async function sha256(t){ const b=new TextEncoder().encode(t); const h=await crypto.subtle.digest("SHA-256",b); return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+function unlock(){ $("gate").hidden=true; $("start").hidden=false; $("boardcard").hidden=false; }
+$("gateform").onsubmit=async e=>{ e.preventDefault(); const v=$("pw").value.trim(); const nm=$("nm").value.trim();
+  if(!nm){ $("pwerr").textContent="入個名先，上榜用。"; $("nm").focus(); return; }
+  let ok=false; try{ ok=(await sha256(v))===GATE_HASH; }catch(err){ ok=false; }
+  if(ok){ myName=nm; try{ localStorage.setItem("vflow_gate","1"); localStorage.setItem("vflow_name",nm); }catch(err){} $("who").textContent="你係 "+myName; unlock(); } else { $("pwerr").textContent="密碼唔啱，再試下。"; $("pw").select(); } };
+try{ if(localStorage.getItem("vflow_gate")==="1" && myName) unlock(); else if(myName) $("nm").value=myName; }catch(e){}
+boot();
+try{ if(matchMedia("(prefers-reduced-motion: reduce)").matches){ const v=document.querySelector(".hero-media video"); v.removeAttribute("autoplay"); v.pause(); } }catch(e){}
+</script>
+
+</body>
+</html>
