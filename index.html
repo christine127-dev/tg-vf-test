@@ -737,7 +737,7 @@ let CATS = BANKS.ops.cats, Q = BANKS.ops.q;
 const $ = id => document.getElementById(id);
 const LVL={1:"初級",2:"中級",3:"高級"};
 let selectedCats = new Set(), level = 1;
-let deck = [], idx = 0, correct = 0, points = 0, misses = [], n = 10, answered = false;
+let deck = [], idx = 0, correct = 0, points = 0, misses = [], n = 10, answered = false, answers = [];
 
 let count=25;
 const LVLHINT={1:"電極、模式、參數、禁忌配對，干擾項係鄰近嘅真實數值。",2:"流程次序、起步強度、換頭換模式、迴路板位置。",3:"現場情境：W 數異常、熱度變化、紅點刺痛、禁忌邊界。",0:"三級隨機抽，分數按題目級別計。"};
@@ -772,7 +772,7 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 function start(count){
   let pool = Q.map((q,i)=>i).filter(i=>(selectedCats.size===0||selectedCats.has(Q[i][0])) && (level===0||Q[i][1]===level));
   if(!pool.length){ pool = Q.map((q,i)=>i).filter(i=>level===0||Q[i][1]===level); }
-  deck = shuffle(pool).slice(0,count); n = deck.length; idx=0; correct=0; points=0; misses=[];
+  deck = shuffle(pool).slice(0,count); n = deck.length; idx=0; correct=0; points=0; misses=[]; answers=[];
   $("start").hidden=true; $("done").hidden=true; $("quiz").hidden=false; document.body.classList.add("playing"); render(); window.scrollTo({top:0});
 }
 function render(){
@@ -792,6 +792,7 @@ function answer(btn,ok,q){
   document.querySelectorAll(".opt").forEach(b=>{b.disabled=true; if(b.lastChild.textContent===q[3]) b.classList.add("right");});
   if(!ok) btn.classList.add("wrong");
   if(ok){ correct++; points+=q[1]; } else misses.push(q);
+  answers.push({i:deck[idx], lvl:q[1], cat:q[0], ok:ok?1:0, prompt:q[2]});
   const e=$("explain"); e.className="explain "+(ok?"ok":"bad"); e.innerHTML='<b></b><span></span><div class="deep"><span class="deep-k"></span><span></span></div>';
   e.firstChild.textContent=ok?"啱！+"+q[1]+" 分":"唔啱。正確係："+q[3]; e.children[1].textContent=q[5];
   e.children[2].firstChild.textContent=ok?"實際點做":"錯咗會點、實際點做"; e.children[2].lastChild.textContent=q[6]; e.hidden=false;
@@ -833,7 +834,7 @@ async function saveScore(c,total,pts){
   if(!SHEET_API){ msg.textContent="未設定排行榜，呢局唔會上榜。"; return; }
   if(!myName){ msg.textContent="未入名，呢局唔會上榜。"; return; }
   const pct=Math.round(c/total*1000)/10;
-  const payload={name:myName, track, level, count:total, correct:c, points:pts, pct, ts:new Date().toISOString()};
+  const payload={name:myName, track, level, count:total, correct:c, points:pts, pct, ts:new Date().toISOString(), answers};
   try{
     const r=await fetch(SHEET_API,{method:"POST",body:JSON.stringify(payload)}); // text/plain body → 唔會觸發 CORS preflight
     const data=await r.json();
